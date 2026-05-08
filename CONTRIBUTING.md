@@ -8,7 +8,7 @@ Use the bug or feature template. Screenshots, recordings, and clear reproduction
 
 ## Pull Requests
 
-- Open pull requests against `main`.
+- Open pull requests against `dev`.
 - Keep changes focused.
 - Open an issue first for larger features, new provider integrations, workflow changes, or architecture changes.
 - Do not include secrets, private prompts, API keys, tokens, private repository names, or sensitive logs.
