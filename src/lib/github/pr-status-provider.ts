@@ -38,6 +38,11 @@ export type PrProbeResult =
        * when HEAD is detached or unresolvable.
        */
       resolvedBranch: string | null;
+    }
+  | {
+      kind: 'transient_error';
+      stderr: string;
+      resolvedBranch: string | null;
     };
 
 const ghAvailableCache = new Map<AgentEnvironment, boolean>();
@@ -88,6 +93,25 @@ export async function isGhCliAvailable(
 /** Exposed for tests / dev: reset the gh detection cache. */
 export function resetGhAvailabilityCache(): void {
   ghAvailableCache.clear();
+}
+
+/**
+ * Resolve the worktree's current HEAD branch, or null if HEAD is detached
+ * or git fails. Used by callers that don't have a stored branch (bare
+ * sessions) but still want to drive `probeTaskPrStatus`.
+ */
+export async function resolveCurrentBranch(
+  workDir: string,
+  agentEnvironment: AgentEnvironment = 'native',
+): Promise<string | null> {
+  if (!workDir) return null;
+  const result = await execGitInDir(
+    ['rev-parse', '--abbrev-ref', 'HEAD'],
+    workDir,
+    agentEnvironment,
+  );
+  const head = result?.stdout.trim();
+  return head && head !== 'HEAD' ? head : null;
 }
 
 function normalizeGithubOwnerRepo(remoteUrl: string | null): string | null {
@@ -191,8 +215,10 @@ export async function probeTaskPrStatus(params: {
       return { kind: 'unsupported', reason: 'gh_unauthenticated' };
     }
     logger.warn({ branch: probeBranch, ownerRepo, stderr: run.stderr.slice(0, 300) }, 'gh pr list failed');
-    // Transient failure — don't mark unsupported, just report no update.
-    return { kind: 'ok', prStatus: null, remoteBranchExists, resolvedBranch };
+    // Transient failure (network blip, rate limit, subprocess hiccup). Surface
+    // a distinct kind so callers can leave the previously-known PR state in the
+    // DB instead of overwriting it with null and broadcasting "PR gone".
+    return { kind: 'transient_error', stderr: run.stderr, resolvedBranch };
   }
 
   let payload: GhPrListItem[] = [];

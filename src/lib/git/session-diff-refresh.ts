@@ -2,6 +2,7 @@ import * as dbSessions from '@/lib/db/sessions';
 import { getAgentEnvironment } from '@/lib/cli/spawn-cli';
 import logger from '@/lib/logger';
 import { syncTaskPr } from '@/lib/github/task-pr-sync';
+import { syncSessionPr } from '@/lib/github/session-pr-sync';
 import { flushGitPanelRecompute } from './git-panel-cache';
 import { flushRecompute } from './worktree-diff-stats-cache';
 
@@ -44,12 +45,19 @@ export async function refreshSessionDiffState(
     );
   }
 
-  await runOperation('git_panel_state', flushGitPanelRecompute(sessionId, userId));
-
+  // Run PR sync BEFORE the git-panel recompute so the panel data picks up
+  // the freshly-probed PR state in the same broadcast. Otherwise the panel
+  // is built from stale prContext/sessionPr cache and the PR-derived
+  // github.available / github.reasonCode lag until the next reload.
   if (session.task_id) {
     const agentEnvironment = await getAgentEnvironment(userId);
     await runOperation('task_pr_status', syncTaskPr(session.task_id, { agentEnvironment }));
+  } else if (session.work_dir) {
+    const agentEnvironment = await getAgentEnvironment(userId);
+    await runOperation('session_pr_status', syncSessionPr(sessionId, { agentEnvironment }));
   }
+
+  await runOperation('git_panel_state', flushGitPanelRecompute(sessionId, userId));
 }
 
 export function refreshSessionDiffStateInBackground(

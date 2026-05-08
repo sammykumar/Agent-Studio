@@ -6,6 +6,7 @@ import { isTurnInFlight, useChatStore } from "@/stores/chat-store";
 import { useGitPanelStore } from "@/stores/git-panel-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useSessionStore } from "@/stores/session-store";
+import { useSessionPrStore } from "@/stores/session-pr-store";
 import { useTaskStore } from "@/stores/task-store";
 import type {
   GitChangedFilesData,
@@ -111,6 +112,9 @@ export function useGitPanelController(sessionId: string | null) {
   const liveTaskId = data?.taskId ?? taskSnapshot?.id;
   const livePrStatus = useTaskStore((state) =>
     liveTaskId ? state.prStatusByTaskId[liveTaskId] : undefined,
+  );
+  const liveSessionPr = useSessionPrStore((state) =>
+    !liveTaskId && sessionId ? state.prBySessionId[sessionId] : undefined,
   );
   const gitConfig = useSettingsStore((state) => state.settings.gitConfig);
 
@@ -230,9 +234,19 @@ export function useGitPanelController(sessionId: string | null) {
     if (typeof document === "undefined") return;
 
     const refreshOnVisible = () => {
-      if (document.visibilityState === "visible") {
-        void loadPanel({ silent: true });
+      if (document.visibilityState !== "visible") return;
+      // Ask the server to re-probe git state + PR status (covers work done
+      // outside Tessera — CLI push, external gh pr create, etc.). Don't await:
+      // the WS broadcast and the loadPanel re-read below converge the UI.
+      if (!isTransientSessionId(sessionId)) {
+        void fetch(
+          `/api/sessions/${encodeURIComponent(sessionId)}/refresh-git`,
+          { method: "POST" },
+        ).catch(() => {
+          // Best-effort — staleness recovers on the next focus or poll tick.
+        });
       }
+      void loadPanel({ silent: true });
     };
 
     document.addEventListener("visibilitychange", refreshOnVisible);
@@ -257,7 +271,7 @@ export function useGitPanelController(sessionId: string | null) {
           prUnsupported: taskSnapshot.prUnsupported,
           remoteBranchExists: taskSnapshot.remoteBranchExists,
         }
-      : livePrStatus;
+      : (livePrStatus ?? liveSessionPr);
 
     return {
       ...data,
@@ -267,7 +281,7 @@ export function useGitPanelController(sessionId: string | null) {
       remoteBranchExists:
         livePr?.remoteBranchExists ?? data.remoteBranchExists,
     };
-  }, [data, livePrStatus, sessionSnapshot?.diffStats, taskSnapshot]);
+  }, [data, liveSessionPr, livePrStatus, sessionSnapshot?.diffStats, taskSnapshot]);
 
   const closeAction = useCallback(() => {
     setActiveAction(null);
