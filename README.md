@@ -31,7 +31,7 @@ Open source | Claude Code + Codex + OpenCode | Full CLI workflows in UI | From i
 
 ## Community And Contributions
 
-Tessera is early, local-first infrastructure for developers who run coding agents every day. We welcome focused issues and pull requests from real usage: desktop QA on Windows, macOS, and Linux; Claude Code, Codex, and OpenCode provider edge cases; documentation fixes; UI polish; and workflow reliability improvements.
+Tessera is for developers who run coding agents every day. We welcome focused issues and pull requests from real usage: desktop QA on Windows, macOS, and Linux; Claude Code, Codex, and OpenCode provider edge cases; documentation fixes; UI polish; and workflow reliability improvements.
 
 Start with [good first issues][good-first-issues] or [help wanted][help-wanted] when they are available. If your change is larger than a focused fix, open a [discussion][discussions] or issue first so we can align on the approach.
 
