@@ -72,8 +72,18 @@ test('terminal client subscribes before creating the server process', () => {
 
 test('terminal creation is not tied to active panel focus changes', () => {
   assert.doesNotMatch(terminalPanelSource, /useSessionStore\(\(state\) => state\.activeSessionId\)/);
-  assert.match(terminalPanelSource, /getSessionSelectionId\(useSessionStore\.getState\(\)\.activeSessionId\)/);
-  assert.match(terminalPanelSource, /\}, \[terminalId\]\);/);
+  assert.doesNotMatch(terminalPanelSource, /useSessionStore\.getState\(\)\.activeSessionId/);
+  assert.match(terminalPanelSource, /\}, \[terminalId, terminalSessionId\]\);/);
+});
+
+test('terminal panels preserve the source session context used to create them', () => {
+  assert.match(panelTypesSource, /terminalSessionId\?: string \| null/);
+  assert.match(panelStoreSource, /assignTerminal\(newPanelId, terminalId, activePanel\.sessionId\)/);
+  assert.match(panelStoreSource, /terminalSessionId: oldPanel\.terminalSessionId \?\? null/);
+  assert.match(panelStoreSource, /sessionId, terminalId: null, terminalSessionId: null/);
+  assert.match(terminalPanelSource, /terminalSessionId: string \| null/);
+  assert.match(terminalPanelSource, /sessionId: getSessionSelectionId\(terminalSessionId\)/);
+  assert.doesNotMatch(terminalPanelSource, /useSessionStore\.getState\(\)\.activeSessionId/);
 });
 
 test('terminal panels expose a panel drag handle', () => {
@@ -94,6 +104,8 @@ test('panel node drag preserves terminal panel identity', () => {
   assert.match(panelStoreSource, /movePanelNode:/);
   assert.match(panelStoreSource, /terminalId: sourcePanel\.terminalId \?\? null/);
   assert.match(panelStoreSource, /terminalId: targetPanel\.terminalId \?\? null/);
+  assert.match(panelStoreSource, /terminalSessionId: sourcePanel\.terminalSessionId \?\? null/);
+  assert.match(panelStoreSource, /terminalSessionId: targetPanel\.terminalSessionId \?\? null/);
 });
 
 test('wsl terminal profiles are blocked until path conversion is implemented', () => {

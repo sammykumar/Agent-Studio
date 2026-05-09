@@ -90,6 +90,7 @@ function cloneTabPanelTree(tabData: TabPanelData): TabPanelData | null {
       id: newPanelId,
       sessionId: oldPanel.sessionId,
       terminalId: oldPanel.terminalId ?? null,
+      terminalSessionId: oldPanel.terminalSessionId ?? null,
     };
   }
 
@@ -275,13 +276,13 @@ export const usePanelStore = create<PanelStore>()((set, get) => ({
     if (!activePanel) return null;
 
     if (activePanel.sessionId === null && !activePanel.terminalId) {
-      get().assignTerminal(panelId, terminalId);
+      get().assignTerminal(panelId, terminalId, activePanel.sessionId);
       return panelId;
     }
 
     const newPanelId = get().splitPanel(panelId, direction, null);
     if (!newPanelId) return null;
-    get().assignTerminal(newPanelId, terminalId);
+    get().assignTerminal(newPanelId, terminalId, activePanel.sessionId);
     return newPanelId;
   },
 
@@ -303,11 +304,13 @@ export const usePanelStore = create<PanelStore>()((set, get) => ({
           ...sourcePanel,
           sessionId: targetPanel.sessionId,
           terminalId: targetPanel.terminalId ?? null,
+          terminalSessionId: targetPanel.terminalSessionId ?? null,
         },
         [targetPanelId]: {
           ...targetPanel,
           sessionId: sourcePanel.sessionId,
           terminalId: sourcePanel.terminalId ?? null,
+          terminalSessionId: sourcePanel.terminalSessionId ?? null,
         },
       };
       const nextTabData: TabPanelData = {
@@ -501,7 +504,7 @@ export const usePanelStore = create<PanelStore>()((set, get) => ({
 
     const nextPanels = {
       ...tabData.panels,
-      [panelId]: { ...tabData.panels[panelId], sessionId, terminalId: null },
+      [panelId]: { ...tabData.panels[panelId], sessionId, terminalId: null, terminalSessionId: null },
     };
     const fallbackActivePanelId =
       sessionId === null && panelId === tabData.activePanelId
@@ -527,7 +530,7 @@ export const usePanelStore = create<PanelStore>()((set, get) => ({
     }
   },
 
-  assignTerminal: (panelId, terminalId) => {
+  assignTerminal: (panelId, terminalId, terminalSessionId = null) => {
     const state = get();
     const tabData = state.tabPanels[state.activeTabId];
     if (!tabData) return;
@@ -536,7 +539,7 @@ export const usePanelStore = create<PanelStore>()((set, get) => ({
 
     const nextPanels = {
       ...tabData.panels,
-      [panelId]: { ...panel, sessionId: null, terminalId },
+      [panelId]: { ...panel, sessionId: null, terminalId, terminalSessionId },
     };
     const nextTabData: TabPanelData = {
       ...tabData,

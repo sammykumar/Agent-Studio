@@ -3,9 +3,9 @@ import { getSessionSelectionId } from '@/lib/constants/special-sessions';
 import { useBoardStore } from '@/stores/board-store';
 import { useSessionStore } from '@/stores/session-store';
 
-export function getInitialTerminalCwd(): string | null {
+export function getInitialTerminalCwd(sessionId?: string | null): string | null {
   const sessionState = useSessionStore.getState();
-  const selectionSessionId = getSessionSelectionId(sessionState.activeSessionId);
+  const selectionSessionId = getSessionSelectionId(sessionId ?? sessionState.activeSessionId);
   if (selectionSessionId) {
     const activeSession = sessionState.getSession(selectionSessionId);
     if (activeSession?.workDir) {

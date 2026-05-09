@@ -3,6 +3,7 @@ export interface Panel {
   readonly id: string;
   sessionId: string | null;
   terminalId?: string | null;
+  terminalSessionId?: string | null;
 }
 
 // 레이아웃 트리 노드 유니온
@@ -52,7 +53,7 @@ export interface PanelStoreActions {
   closePanel(panelId: string): void;
   assignSession(panelId: string, sessionId: string | null): void;
   assignSessionInTab(tabId: string, panelId: string, sessionId: string | null): void;
-  assignTerminal(panelId: string, terminalId: string | null): void;
+  assignTerminal(panelId: string, terminalId: string | null, terminalSessionId?: string | null): void;
   setActivePanelId(panelId: string): void;
   resizeSplit(leftAnchor: string, rightAnchor: string, ratio: number): void;
   initializeWithSession(sessionId: string | null): void;
