@@ -34,9 +34,20 @@ const PanelLeaf = memo(function PanelLeaf({ panelId }: { panelId: string }) {
   const terminalId = usePanelStore(
     (state) => state.tabPanels[tabId]?.panels[panelId]?.terminalId ?? null,
   );
+  const terminalSessionId = usePanelStore(
+    (state) => state.tabPanels[tabId]?.panels[panelId]?.terminalSessionId ?? null,
+  );
 
   const content = (() => {
-    if (terminalId) return <TerminalPanel panelId={panelId} terminalId={terminalId} />;
+    if (terminalId) {
+      return (
+        <TerminalPanel
+          panelId={panelId}
+          terminalId={terminalId}
+          terminalSessionId={terminalSessionId}
+        />
+      );
+    }
     if (sessionId === SKILLS_DASHBOARD_SESSION_ID) return <SkillDashboard />;
     if (sessionId === ARCHIVE_DASHBOARD_SESSION_ID) return <ArchiveDashboard />;
     if (sessionId) {

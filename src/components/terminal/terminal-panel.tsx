@@ -6,7 +6,6 @@ import { wsClient } from '@/lib/ws/client';
 import type { ServerTransportMessage } from '@/lib/ws/message-types';
 import { Button } from '@/components/ui/button';
 import { TabIdContext, usePanelStore } from '@/stores/panel-store';
-import { useSessionStore } from '@/stores/session-store';
 import { getSessionSelectionId } from '@/lib/constants/special-sessions';
 import { getInitialTerminalCwd } from '@/lib/terminal/client-terminal-cwd';
 import { setPanelNodeDragData } from '@/lib/dnd/panel-session-drag';
@@ -14,6 +13,7 @@ import { setPanelNodeDragData } from '@/lib/dnd/panel-session-drag';
 interface TerminalPanelProps {
   panelId: string;
   terminalId: string;
+  terminalSessionId: string | null;
 }
 
 function isTerminalAssignedToAnyPanel(terminalId: string): boolean {
@@ -23,7 +23,7 @@ function isTerminalAssignedToAnyPanel(terminalId: string): boolean {
   );
 }
 
-export function TerminalPanel({ panelId, terminalId }: TerminalPanelProps) {
+export function TerminalPanel({ panelId, terminalId, terminalSessionId }: TerminalPanelProps) {
   const tabId = useContext(TabIdContext);
   const containerRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<any>(null);
@@ -111,8 +111,8 @@ export function TerminalPanel({ panelId, terminalId }: TerminalPanelProps) {
         const dimensions = fitAddon.proposeDimensions();
         wsClient.createTerminal({
           terminalId,
-          cwd: getInitialTerminalCwd(),
-          sessionId: getSessionSelectionId(useSessionStore.getState().activeSessionId),
+          cwd: getInitialTerminalCwd(terminalSessionId),
+          sessionId: getSessionSelectionId(terminalSessionId),
           cols: dimensions?.cols,
           rows: dimensions?.rows,
         });
@@ -145,7 +145,7 @@ export function TerminalPanel({ panelId, terminalId }: TerminalPanelProps) {
         wsClient.closeTerminal(terminalId);
       }
     };
-  }, [terminalId]);
+  }, [terminalId, terminalSessionId]);
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#0f1115] text-[#d7dde3]" data-testid="terminal-panel">
