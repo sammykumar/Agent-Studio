@@ -827,6 +827,10 @@ export const ja: I18nMessages = {
       chatInstantHint: '新しいチャットをすぐに作成します。',
       taskWorktreeHint: 'チャットセッション、管理ブランチ、ワークツリーをまとめて準備します。',
       taskWorktreeDescription: 'チャットセッション、管理ブランチ、ワークツリーをまとめて準備します。',
+      baseRefLabel: 'Base branch',
+      baseRefLoading: 'Loading branches...',
+      baseRefUnavailable: 'No base branches available',
+      baseRefHelp: 'New worktree starts from this ref.',
     },
     contextMenu: {
       setStatus: 'ステータスを変更',

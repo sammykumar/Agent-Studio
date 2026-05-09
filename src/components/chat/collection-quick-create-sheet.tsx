@@ -6,6 +6,7 @@ import { FolderGit2, MessageSquare, ListTodo, X as XIcon } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useSessionCrud } from '@/hooks/use-session-crud';
+import { useWorktreeBaseRefs } from '@/hooks/use-worktree-base-refs';
 import { useWorktreeSession } from '@/hooks/use-worktree-session';
 import {
   buildManagedWorktreePreviewPath,
@@ -195,6 +196,14 @@ export function CollectionQuickCreateSheet({
     () => buildManagedWorktreePreviewPath(projectDir, branchPrefix, branchSlug, pathTemplate),
     [branchPrefix, branchSlug, pathTemplate, projectDir]
   );
+  const {
+    refs: baseRefs,
+    selectedBaseRef,
+    selectedRef,
+    setSelectedBaseRef,
+    isLoading: isLoadingBaseRefs,
+    error: baseRefError,
+  } = useWorktreeBaseRefs(canCreateTask ? projectDir : null);
 
   const handleCreateChat = useCallback(async () => {
     setError(null);
@@ -235,6 +244,10 @@ export function CollectionQuickCreateSheet({
       setError(t('task.creation.errorEmptyBranchSlug'));
       return;
     }
+    if (isLoadingBaseRefs || !selectedBaseRef) {
+      setError(t('task.creation.baseRefUnavailable'));
+      return;
+    }
     setSubmittingMode('task');
     let shouldClose = false;
     try {
@@ -245,6 +258,7 @@ export function CollectionQuickCreateSheet({
         taskTitle: trimmedTaskTitle || t('task.creation.title'),
         hasCustomTitle: trimmedTaskTitle.length > 0,
         branchSlug: normalizedBranchSlug,
+        baseRef: selectedBaseRef,
         allowBranchSlugSuffix: !branchSlugEdited,
         suppressErrorToast: true,
         collectionId: selectedCollection?.id ?? undefined,
@@ -274,8 +288,10 @@ export function CollectionQuickCreateSheet({
     onSessionCreated,
     branchSlug,
     branchSlugEdited,
+    isLoadingBaseRefs,
     projectDir,
     projectId,
+    selectedBaseRef,
     selectedCollection?.id,
     selectedProvider,
     t,
@@ -499,6 +515,38 @@ export function CollectionQuickCreateSheet({
                 data-testid={`collection-task-worktree-path-preview-${resolvedScopeId}`}
               >
                 {worktreePathPreview}
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor={`collection-task-base-ref-${resolvedScopeId}`}
+                className="text-[9px] font-semibold uppercase tracking-[0.08em] text-(--text-muted)"
+              >
+                {t('task.creation.baseRefLabel')}
+              </label>
+              <select
+                id={`collection-task-base-ref-${resolvedScopeId}`}
+                value={selectedBaseRef}
+                onChange={(event) => setSelectedBaseRef(event.target.value)}
+                disabled={submittingMode !== null || isLoadingBaseRefs || baseRefs.length === 0}
+                className="w-full rounded-lg border border-(--divider) bg-(--input-bg) px-2.5 py-1.5 text-[13px] text-(--sidebar-text-active) outline-none transition-colors focus:border-(--accent) disabled:cursor-not-allowed disabled:opacity-60"
+                data-testid={`collection-task-base-ref-${resolvedScopeId}`}
+              >
+                {isLoadingBaseRefs ? (
+                  <option value="">{t('task.creation.baseRefLoading')}</option>
+                ) : baseRefs.length === 0 ? (
+                  <option value="">{t('task.creation.baseRefUnavailable')}</option>
+                ) : (
+                  baseRefs.map((ref) => (
+                    <option key={ref.name} value={ref.name}>
+                      {ref.current ? `${ref.label} (current)` : ref.label}
+                    </option>
+                  ))
+                )}
+              </select>
+              <p className="truncate px-1 text-[9px] text-(--text-muted)">
+                {baseRefError ?? (selectedRef ? t('task.creation.baseRefHelp') : t('task.creation.baseRefUnavailable'))}
               </p>
             </div>
 
