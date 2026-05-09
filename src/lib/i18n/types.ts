@@ -831,6 +831,13 @@ export interface I18nMessages {
       chatInstantHint: string;
       taskWorktreeHint: string;
       taskWorktreeDescription: string;
+      baseRefLabel: string;
+      baseRefLoading: string;
+      baseRefUnavailable: string;
+      baseRefCurrentSuffix: string;
+      baseRefCurrentHead: string;
+      baseRefLocalGroup: string;
+      baseRefRemoteGroup: string;
     };
     contextMenu: {
       setStatus: string;

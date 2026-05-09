@@ -826,6 +826,13 @@ export const en: I18nMessages = {
       chatInstantHint: 'Creates a new chat immediately.',
       taskWorktreeHint: 'Creates a chat session, managed branch, and worktree.',
       taskWorktreeDescription: 'Creates a chat session, managed branch, and worktree.',
+      baseRefLabel: 'Start from',
+      baseRefLoading: 'Loading refs...',
+      baseRefUnavailable: 'Using current HEAD',
+      baseRefCurrentSuffix: 'current',
+      baseRefCurrentHead: 'current HEAD',
+      baseRefLocalGroup: 'Local',
+      baseRefRemoteGroup: 'Remote',
     },
     contextMenu: {
       setStatus: 'Set Status',

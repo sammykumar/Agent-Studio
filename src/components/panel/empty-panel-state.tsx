@@ -7,7 +7,9 @@ import { useSessionStore } from '@/stores/session-store';
 import { useBoardStore } from '@/stores/board-store';
 import { useCollectionStore } from '@/stores/collection-store';
 import { useSessionCrud } from '@/hooks/use-session-crud';
+import { useWorktreeBaseRefs } from '@/hooks/use-worktree-base-refs';
 import { useWorktreeSession } from '@/hooks/use-worktree-session';
+import { WorktreeStartFromControl } from '@/components/task/worktree-start-from-control';
 import { useI18n } from '@/lib/i18n';
 import { ALL_PROJECTS_SENTINEL } from '@/lib/constants/project-strip';
 import { getSessionSelectionId } from '@/lib/constants/special-sessions';
@@ -92,6 +94,15 @@ export function EmptyPanelState({ panelId }: EmptyPanelStateProps) {
     rawSelectedCollectionId !== null && collections.some((c) => c.id === rawSelectedCollectionId)
       ? rawSelectedCollectionId
       : null;
+  const {
+    refs: baseRefs,
+    selectedBaseRef,
+    selectedBaseRefForCreate,
+    selectedRef,
+    setSelectedBaseRef,
+    isLoading: isLoadingBaseRefs,
+    error: baseRefError,
+  } = useWorktreeBaseRefs(mode === 'task' ? activeProject?.decodedPath : null);
 
   const handleSetModeTask = useCallback((_e: MouseEvent) => {
     setMode('task');
@@ -152,6 +163,7 @@ export function EmptyPanelState({ panelId }: EmptyPanelStateProps) {
         taskTitle: trimmedTaskTitle || t('task.creation.title'),
         hasCustomTitle: trimmedTaskTitle.length > 0,
         branchSlug: normalizedBranchSlug,
+        baseRef: selectedBaseRefForCreate,
         allowBranchSlugSuffix: !branchSlugEdited,
         suppressErrorToast: true,
         collectionId: selectedCollectionId ?? undefined,
@@ -177,6 +189,7 @@ export function EmptyPanelState({ panelId }: EmptyPanelStateProps) {
     mode,
     panelId,
     selectedCollectionId,
+    selectedBaseRefForCreate,
     selectedProvider,
     setActivePanelId,
     t,
@@ -423,6 +436,20 @@ export function EmptyPanelState({ panelId }: EmptyPanelStateProps) {
                         </p>
                       ) : null}
                     </div>
+                  )}
+
+                  {activeProject && (
+                    <WorktreeStartFromControl
+                      id={`empty-panel-base-ref-${panelId}`}
+                      testId="empty-panel-base-ref"
+                      refs={baseRefs}
+                      selectedBaseRef={selectedBaseRef}
+                      selectedRef={selectedRef}
+                      isLoading={isLoadingBaseRefs}
+                      error={baseRefError}
+                      disabled={isSubmitting}
+                      onSelectedBaseRefChange={setSelectedBaseRef}
+                    />
                   )}
                 </>
               )}
