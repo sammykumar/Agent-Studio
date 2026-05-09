@@ -7,6 +7,7 @@ import { useSessionStore } from '@/stores/session-store';
 import { useBoardStore } from '@/stores/board-store';
 import { useCollectionStore } from '@/stores/collection-store';
 import { useSessionCrud } from '@/hooks/use-session-crud';
+import { useWorktreeBaseRefs } from '@/hooks/use-worktree-base-refs';
 import { useWorktreeSession } from '@/hooks/use-worktree-session';
 import { useI18n } from '@/lib/i18n';
 import { ALL_PROJECTS_SENTINEL } from '@/lib/constants/project-strip';
@@ -92,6 +93,14 @@ export function EmptyPanelState({ panelId }: EmptyPanelStateProps) {
     rawSelectedCollectionId !== null && collections.some((c) => c.id === rawSelectedCollectionId)
       ? rawSelectedCollectionId
       : null;
+  const {
+    refs: baseRefs,
+    selectedBaseRef,
+    selectedRef,
+    setSelectedBaseRef,
+    isLoading: isLoadingBaseRefs,
+    error: baseRefError,
+  } = useWorktreeBaseRefs(mode === 'task' ? activeProject?.decodedPath : null);
 
   const handleSetModeTask = useCallback((_e: MouseEvent) => {
     setMode('task');
@@ -132,6 +141,11 @@ export function EmptyPanelState({ panelId }: EmptyPanelStateProps) {
       return;
     }
 
+    if (isLoadingBaseRefs || !selectedBaseRef) {
+      setError(t('task.creation.baseRefUnavailable'));
+      return;
+    }
+
     setIsSubmittingTask(true);
     try {
       const trimmedTaskTitle = taskTitle.trim();
@@ -152,6 +166,7 @@ export function EmptyPanelState({ panelId }: EmptyPanelStateProps) {
         taskTitle: trimmedTaskTitle || t('task.creation.title'),
         hasCustomTitle: trimmedTaskTitle.length > 0,
         branchSlug: normalizedBranchSlug,
+        baseRef: selectedBaseRef,
         allowBranchSlugSuffix: !branchSlugEdited,
         suppressErrorToast: true,
         collectionId: selectedCollectionId ?? undefined,
@@ -173,10 +188,12 @@ export function EmptyPanelState({ panelId }: EmptyPanelStateProps) {
     activeProject,
     createSession,
     createWorktreeSession,
+    isLoadingBaseRefs,
     isSelectedProviderReady,
     mode,
     panelId,
     selectedCollectionId,
+    selectedBaseRef,
     selectedProvider,
     setActivePanelId,
     t,
@@ -422,6 +439,40 @@ export function EmptyPanelState({ panelId }: EmptyPanelStateProps) {
                           {worktreePathPreview}
                         </p>
                       ) : null}
+                    </div>
+                  )}
+
+                  {activeProject && (
+                    <div className="space-y-1.5">
+                      <label
+                        htmlFor={`empty-panel-base-ref-${panelId}`}
+                        className="text-[10px] font-semibold uppercase tracking-[0.08em] text-(--text-muted)"
+                      >
+                        {t('task.creation.baseRefLabel')}
+                      </label>
+                      <select
+                        id={`empty-panel-base-ref-${panelId}`}
+                        value={selectedBaseRef}
+                        onChange={(event) => setSelectedBaseRef(event.target.value)}
+                        disabled={isSubmitting || isLoadingBaseRefs || baseRefs.length === 0}
+                        className="w-full max-w-md rounded-xl border border-(--divider) bg-(--input-bg) px-3 py-2.5 text-sm text-(--sidebar-text-active) outline-none transition-colors focus:border-(--accent) disabled:cursor-not-allowed disabled:opacity-60"
+                        data-testid="empty-panel-base-ref"
+                      >
+                        {isLoadingBaseRefs ? (
+                          <option value="">{t('task.creation.baseRefLoading')}</option>
+                        ) : baseRefs.length === 0 ? (
+                          <option value="">{t('task.creation.baseRefUnavailable')}</option>
+                        ) : (
+                          baseRefs.map((ref) => (
+                            <option key={ref.name} value={ref.name}>
+                              {ref.current ? `${ref.label} (current)` : ref.label}
+                            </option>
+                          ))
+                        )}
+                      </select>
+                      <p className="truncate px-1 text-[11px] text-(--text-muted)">
+                        {baseRefError ?? (selectedRef ? t('task.creation.baseRefHelp') : t('task.creation.baseRefUnavailable'))}
+                      </p>
                     </div>
                   )}
                 </>

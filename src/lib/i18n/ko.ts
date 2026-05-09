@@ -833,6 +833,10 @@ export const ko: I18nMessages = {
       chatInstantHint: '새 채팅을 바로 만듭니다.',
       taskWorktreeHint: '채팅 세션, 관리 브랜치, 워크트리를 함께 준비합니다.',
       taskWorktreeDescription: '채팅 세션, 관리 브랜치, 워크트리를 함께 준비합니다.',
+      baseRefLabel: 'Base branch',
+      baseRefLoading: 'Loading branches...',
+      baseRefUnavailable: 'No base branches available',
+      baseRefHelp: 'New worktree starts from this ref.',
     },
     contextMenu: {
       setStatus: '상태 변경',

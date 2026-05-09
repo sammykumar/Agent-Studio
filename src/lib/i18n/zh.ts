@@ -826,6 +826,10 @@ export const zh: I18nMessages = {
       chatInstantHint: '立即创建一个新的聊天。',
       taskWorktreeHint: '同时准备聊天会话、托管分支和 worktree。',
       taskWorktreeDescription: '同时准备聊天会话、托管分支和 worktree。',
+      baseRefLabel: 'Base branch',
+      baseRefLoading: 'Loading branches...',
+      baseRefUnavailable: 'No base branches available',
+      baseRefHelp: 'New worktree starts from this ref.',
     },
     contextMenu: {
       setStatus: '设置状态',
