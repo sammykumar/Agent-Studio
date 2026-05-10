@@ -16,6 +16,25 @@ type SendToUser = (userId: string, message: ServerTransportMessage) => void;
 const MAX_REPLAY_BUFFER_CHARS = 200_000;
 const TERMINAL_TRACE_PATH = getTesseraDataPath('terminal-debug.log');
 
+function hasUtf8Locale(value: string | undefined): boolean {
+  return /\butf-?8\b/i.test(value ?? '');
+}
+
+function buildTerminalEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const nextEnv = { ...env };
+
+  if (
+    getRuntimePlatform() === 'darwin'
+    && !hasUtf8Locale(nextEnv.LC_ALL)
+    && !hasUtf8Locale(nextEnv.LC_CTYPE)
+    && !hasUtf8Locale(nextEnv.LANG)
+  ) {
+    nextEnv.LC_CTYPE = 'UTF-8';
+  }
+
+  return nextEnv;
+}
+
 interface TerminalRuntime {
   terminalId: string;
   userId: string;
@@ -134,7 +153,7 @@ export class TerminalManager {
         cols: options.cols ?? 80,
         rows: options.rows ?? 24,
         cwd: shell.cwd,
-        env: process.env,
+        env: buildTerminalEnv(process.env),
         ...(getRuntimePlatform() === 'win32' ? { useConpty: false } : {}),
       });
       traceTerminalStage('spawn:after', { terminalId: options.terminalId });
