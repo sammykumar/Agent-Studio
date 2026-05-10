@@ -263,6 +263,20 @@ async function writeRuntimePackageJson() {
   );
 }
 
+async function ensureExecutableRuntimeFiles() {
+  const executableFiles = [
+    'node_modules/node-pty/prebuilds/darwin-x64/spawn-helper',
+    'node_modules/node-pty/prebuilds/darwin-arm64/spawn-helper',
+  ];
+
+  for (const relPath of executableFiles) {
+    const filePath = path.join(runtimeDir, relPath);
+    if (await pathExists(filePath)) {
+      await fs.chmod(filePath, 0o755);
+    }
+  }
+}
+
 async function main() {
   if (!(await pathExists(requiredServerFilesPath))) {
     throw new Error('Missing .next/required-server-files.json. Run `npm run build` first.');
@@ -295,6 +309,8 @@ async function main() {
     await copyFileToRuntime(relPath);
   }
   await copyTurbopackExternalAliases();
+
+  await ensureExecutableRuntimeFiles();
 
   await writeRuntimePackageJson();
 
