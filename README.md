@@ -15,7 +15,7 @@ Tessera keeps Claude Code, Codex, and OpenCode sessions organized across project
   </tr>
 </table>
 
-Projects + collections | Tabs + panes | Claude Code + Codex + OpenCode | Kanban board | Git worktrees | Tool logs + diffs + PRs | Windows (including WSL) + macOS + browser
+Projects + collections | Tabs + panes | Claude Code + Codex + OpenCode | Kanban board | Git worktrees | Tool logs + diffs + PRs | Windows (including WSL) + macOS + browser + linux(beta)
 
 | Link | Purpose |
 |------|---------|
