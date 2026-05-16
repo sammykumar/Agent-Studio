@@ -59,3 +59,5 @@ aidlc-docs/
 
 .env.local
 build-win.log
+
+.agents/
