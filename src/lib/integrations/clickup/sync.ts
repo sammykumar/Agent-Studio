@@ -15,7 +15,15 @@ import {
   type ProjectIntegrationRow,
 } from '@/lib/db/project-integrations';
 import { SettingsManager } from '@/lib/settings/manager';
+import type { UserSettings } from '@/lib/settings/types';
 import { ClickUpAuthError, ClickUpClient } from './client';
+
+type LoadSettingsFn = (userId: string, options?: { silent?: boolean }) => Promise<UserSettings>;
+// Keep `this` bound when callers don't supply an override. Pulling the method
+// off `SettingsManager.load` directly drops the class binding and breaks
+// `this.ensureDir()` inside the static.
+const defaultLoadSettings: LoadSettingsFn = (userId, options) =>
+  SettingsManager.load(userId, options);
 import { mapClickUpTaskToTessera, tesseraStatusToClickUp } from './mapping';
 
 export interface ClickUpSyncEvent {
@@ -95,7 +103,7 @@ export interface PullResult {
 
 interface PullDeps {
   loadIntegration?: (projectId: string) => ProjectIntegrationRow | undefined;
-  loadSettings?: typeof SettingsManager.load;
+  loadSettings?: LoadSettingsFn;
   createClient?: (token: string) => ClickUpClient;
   /**
    * Override the post-pull WS fan-out. Defaults to lazy-loading
@@ -123,7 +131,7 @@ export async function pullProjectClickUpTasks(
         throw new Error(msg);
       }
 
-      const settings = await (deps.loadSettings ?? SettingsManager.load)(opts.userId, { silent: true });
+      const settings = await (deps.loadSettings ?? defaultLoadSettings)(opts.userId, { silent: true });
       const token = settings.integrations?.clickup?.personalToken?.trim();
       if (!token) {
         const msg = 'ClickUp token is not configured for this user';
@@ -242,7 +250,7 @@ export async function pullProjectClickUpTasks(
 
 interface PushDeps {
   loadIntegration?: (projectId: string) => ProjectIntegrationRow | undefined;
-  loadSettings?: typeof SettingsManager.load;
+  loadSettings?: LoadSettingsFn;
   createClient?: (token: string) => ClickUpClient;
 }
 
@@ -264,7 +272,7 @@ export async function pushTaskStatusToClickUp(
     const integration = (deps.loadIntegration ?? getProjectIntegration)(link.projectId);
     if (!integration?.clickupSyncEnabled || !integration.clickupStatusMap) return;
 
-    const settings = await (deps.loadSettings ?? SettingsManager.load)(opts.userId, { silent: true });
+    const settings = await (deps.loadSettings ?? defaultLoadSettings)(opts.userId, { silent: true });
     const token = settings.integrations?.clickup?.personalToken?.trim();
     if (!token) return;
 
