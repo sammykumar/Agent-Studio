@@ -10,6 +10,10 @@ import { rateLimitPoller } from './src/lib/rate-limit/poller';
 import { taskPrPoller } from './src/lib/github/task-pr-poller';
 import { installTaskPrStatusBroadcast, uninstallTaskPrStatusBroadcast } from './src/lib/github/task-pr-broadcast';
 import { installSessionPrStatusBroadcast, uninstallSessionPrStatusBroadcast } from './src/lib/github/session-pr-broadcast';
+import {
+  installClickUpSyncBroadcast,
+  uninstallClickUpSyncBroadcast,
+} from './src/lib/integrations/clickup/broadcast';
 import { ensureRSAKeys } from './src/lib/auth/keys';
 import { readUsersFile } from './src/lib/users';
 import { SettingsManager } from './src/lib/settings/manager';
@@ -79,6 +83,7 @@ async function startServer() {
     // Start task PR poller + relay updates to connected clients
     installTaskPrStatusBroadcast((msg) => wsServer.broadcast(msg));
     installSessionPrStatusBroadcast((msg) => wsServer.broadcast(msg));
+    installClickUpSyncBroadcast();
     void taskPrPoller.start();
 
     logger.info({
@@ -127,6 +132,7 @@ async function startServer() {
       taskPrPoller.stop();
       uninstallTaskPrStatusBroadcast();
       uninstallSessionPrStatusBroadcast();
+      uninstallClickUpSyncBroadcast();
 
       // processManager.cleanup() kills every spawned CLI plus its process
       // group (spawn-cli-runtime marks children as detached: true on Unix,

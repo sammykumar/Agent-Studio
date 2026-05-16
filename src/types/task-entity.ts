@@ -59,6 +59,18 @@ export interface TaskEntity {
    * anything sent back to the server.
    */
   isPending?: boolean;
+  /** Linked external task (e.g. ClickUp) when the task originated from a sync. */
+  external?: ExternalTaskLink;
+}
+
+export type ExternalTaskSource = 'clickup';
+
+export interface ExternalTaskLink {
+  source: ExternalTaskSource;
+  id: string;
+  url?: string;
+  status?: string;
+  lastSynced?: string;
 }
 
 export interface TaskSession {

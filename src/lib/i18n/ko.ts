@@ -12,6 +12,8 @@ export const ko: I18nMessages = {
       developmentDesc: 'CLI 연결, 에이전트 환경, 워크트리 기본값.',
       git: 'Git',
       gitDesc: '브랜치 네이밍, 병합 전략, git 액션 프롬프트 템플릿을 설정합니다.',
+      integrations: '통합',
+      integrationsDesc: 'ClickUp 등 외부 도구를 연결해 Tessera와 작업을 동기화합니다.',
     },
     language: '언어',
     profile: {

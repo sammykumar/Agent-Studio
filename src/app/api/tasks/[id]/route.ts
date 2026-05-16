@@ -13,6 +13,7 @@ import {
   broadcastTaskMutation,
   getOriginClientIdFromRequest,
 } from '@/lib/ws/mutation-broadcast';
+import { pushTaskStatusToClickUp } from '@/lib/integrations/clickup/sync';
 
 /**
  * GET /api/tasks/[id]
@@ -143,6 +144,10 @@ export async function PATCH(
         projectId: task.projectId,
         originClientId,
       });
+      // Fire-and-forget: ClickUp outages must not block the local mutation.
+      // shouldPushStatus() inside pushTaskStatusToClickUp suppresses echoes
+      // from the pull loop.
+      void pushTaskStatusToClickUp({ taskId: id, userId: auth.userId });
     }
     return NextResponse.json({ ok: true });
   } catch (err: unknown) {

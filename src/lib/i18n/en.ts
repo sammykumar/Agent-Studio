@@ -12,6 +12,8 @@ export const en: I18nMessages = {
       developmentDesc: 'CLI connections, agent environment, and worktree defaults.',
       git: 'Git',
       gitDesc: 'Branch naming, merge strategy, and per-action prompt templates.',
+      integrations: 'Integrations',
+      integrationsDesc: 'Connect external tools like ClickUp to sync tasks with Tessera.',
     },
     language: 'Language',
     profile: {

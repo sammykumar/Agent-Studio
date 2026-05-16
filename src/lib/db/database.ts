@@ -950,6 +950,30 @@ function runMigrations(db: DatabaseWrapper, fromVersion: number): void {
     }
     logger.info('Migration v25 applied: sessions.worktree_managed column added');
   }
+
+  if (fromVersion < 26) {
+    addColumnIfMissing(db, 'tasks', 'external_source', 'TEXT');
+    addColumnIfMissing(db, 'tasks', 'external_id', 'TEXT');
+    addColumnIfMissing(db, 'tasks', 'external_url', 'TEXT');
+    addColumnIfMissing(db, 'tasks', 'external_status', 'TEXT');
+    addColumnIfMissing(db, 'tasks', 'external_last_synced', 'TEXT');
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS project_integrations (
+        project_id            TEXT PRIMARY KEY,
+        clickup_workspace_id  TEXT,
+        clickup_space_id      TEXT,
+        clickup_list_id       TEXT,
+        clickup_sync_enabled  INTEGER NOT NULL DEFAULT 0,
+        clickup_status_map    TEXT,
+        clickup_last_synced   TEXT,
+        created_at            TEXT NOT NULL,
+        updated_at            TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_tasks_external
+        ON tasks(external_source, external_id) WHERE external_id IS NOT NULL;
+    `);
+    logger.info('Migration v26 applied: project_integrations table + tasks external_* columns');
+  }
 }
 
 /**

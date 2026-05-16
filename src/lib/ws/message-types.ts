@@ -366,6 +366,19 @@ export type AppServerMessage =
       kind: 'created' | 'updated' | 'deleted';
       originClientId?: string;
       projectId: string;
+    }
+  | {
+      type: 'clickup_sync_event';
+      eventType:
+        | 'sync_started'
+        | 'sync_completed'
+        | 'sync_failed'
+        | 'task_upserted'
+        | 'task_archived';
+      projectId: string;
+      taskId?: string;
+      message?: string;
+      error?: string;
     };
 
 /**

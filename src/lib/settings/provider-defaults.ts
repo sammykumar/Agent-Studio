@@ -16,7 +16,11 @@ import {
   normalizeOpenCodeAccessMode,
   splitOpenCodeModelId,
 } from '@/lib/cli/providers/opencode/session-config';
-import type { UserSettings, ProviderSessionDefaults } from './types';
+import type {
+  UserSettings,
+  ProviderSessionDefaults,
+  IntegrationsUserSettings,
+} from './types';
 import { normalizeCliCommandOverrides } from './cli-command-overrides';
 import {
   DEFAULT_PROFILE_AVATAR_DATA_URL,
@@ -522,6 +526,11 @@ export function normalizeUserSettings(raw: Partial<UserSettings> | null | undefi
       globalGuidelines: DEFAULT_GLOBAL_GIT_GUIDELINES,
       actionTemplates: {},
     },
+    integrations: {
+      clickup: {
+        personalToken: '',
+      },
+    },
     version: '1.0.0',
     lastModified: new Date().toISOString(),
   } satisfies UserSettings;
@@ -606,7 +615,33 @@ export function normalizeUserSettings(raw: Partial<UserSettings> | null | undefi
     },
     shortcutOverrides: raw?.shortcutOverrides ?? {},
     gitConfig: normalizeGitConfig(rawGitConfig, defaults.gitConfig),
+    integrations: normalizeIntegrations(raw?.integrations, defaults.integrations),
     lastModified: raw?.lastModified || defaults.lastModified,
+  };
+}
+
+function normalizeIntegrations(
+  raw: Partial<IntegrationsUserSettings> | undefined,
+  defaults: IntegrationsUserSettings,
+): IntegrationsUserSettings {
+  const rawClickUp = raw?.clickup;
+  const personalToken =
+    typeof rawClickUp?.personalToken === 'string' ? rawClickUp.personalToken.trim() : '';
+  const username =
+    typeof rawClickUp?.username === 'string' && rawClickUp.username.trim().length > 0
+      ? rawClickUp.username.trim()
+      : undefined;
+  const workspaceId =
+    typeof rawClickUp?.workspaceId === 'string' && rawClickUp.workspaceId.trim().length > 0
+      ? rawClickUp.workspaceId.trim()
+      : undefined;
+  return {
+    clickup: {
+      ...defaults.clickup,
+      personalToken,
+      ...(username !== undefined ? { username } : {}),
+      ...(workspaceId !== undefined ? { workspaceId } : {}),
+    },
   };
 }
 

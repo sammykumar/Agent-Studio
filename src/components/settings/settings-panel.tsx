@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useCallback, useState, type ReactNode } from 'react';
-import { GitBranch, Palette, SlidersHorizontal, Terminal, X } from 'lucide-react';
+import { GitBranch, Palette, Plug, SlidersHorizontal, Terminal, X } from 'lucide-react';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useI18n } from '@/lib/i18n';
 import ProfileSettings from './profile-settings';
@@ -19,12 +19,13 @@ import CliStatusList from './cli-status-list';
 import CliDiagnosticsPanel from './cli-diagnostics-panel';
 import ToolStatusList from './tool-status-list';
 import GitSettings from './git-settings';
+import ClickUpSettings from './integrations/clickup-settings';
 // import SttSettings from './stt-settings'; // Gemini STT 설정 — 당분간 비활성화
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useElectronPlatform } from '@/hooks/use-electron-platform';
 
-type SettingsSectionId = 'general' | 'appearance' | 'development' | 'git';
+type SettingsSectionId = 'general' | 'appearance' | 'development' | 'git' | 'integrations';
 
 function SettingsCard({
   children,
@@ -99,6 +100,12 @@ export default function SettingsPanel() {
       label: t('settings.sections.git'),
       description: t('settings.sections.gitDesc'),
     },
+    {
+      id: 'integrations' as const,
+      icon: Plug,
+      label: t('settings.sections.integrations'),
+      description: t('settings.sections.integrationsDesc'),
+    },
   ];
 
   const currentSection = sections.find((section) => section.id === activeSection) ?? sections[0];
@@ -118,6 +125,12 @@ export default function SettingsPanel() {
         return (
           <SettingsCard testId="settings-section-git">
             <GitSettings />
+          </SettingsCard>
+        );
+      case 'integrations':
+        return (
+          <SettingsCard testId="settings-section-integrations-clickup">
+            <ClickUpSettings />
           </SettingsCard>
         );
       case 'development':

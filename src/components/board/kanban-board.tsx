@@ -754,6 +754,11 @@ export const KanbanBoard = memo(function KanbanBoard() {
 
   const taskMenuIsRunning = taskMenuAnchor?.task.sessions.some((s) => s.isRunning) ?? false;
   const handleTaskRename = useCallback(async (taskId: string, newTitle: string) => {
+    const task = useTaskStore.getState().getTask(taskId);
+    // Externally-linked task titles are read-only locally — they belong to the
+    // upstream system (e.g. ClickUp). Drop the rename rather than send a PATCH
+    // that the next pull would overwrite.
+    if (task?.external?.source) return;
     await useTaskStore.getState().updateTask(taskId, { title: newTitle });
   }, []);
 
@@ -763,6 +768,13 @@ export const KanbanBoard = memo(function KanbanBoard() {
 
   const handleTaskRenameStart = useCallback(() => {
     if (!taskMenuAnchor) return;
+    const externalUrl = taskMenuAnchor.task.external?.url;
+    if (externalUrl) {
+      // ClickUp owns the title — surface the upstream record instead.
+      window.open(externalUrl, '_blank', 'noopener,noreferrer');
+      setTaskMenuAnchor(null);
+      return;
+    }
     setRenamingTaskId(taskMenuAnchor.task.id);
     setTaskMenuAnchor(null);
   }, [taskMenuAnchor]);

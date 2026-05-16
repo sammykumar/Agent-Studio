@@ -229,6 +229,15 @@ export function handleIncomingServerMessage({
       void useCollectionStore.getState().loadCollections(msg.projectId, { force: true, setCurrent: false });
       return { wasReconnect };
 
+    case 'clickup_sync_event':
+      // Board refresh is driven by the task_mutated event that the sync layer
+      // also fans out. We log here for observability; a future task store can
+      // surface sync_started/completed/failed as transient UI badges.
+      if (msg.eventType === 'sync_failed' && msg.error) {
+        console.warn('[clickup] sync failed', msg.projectId, msg.error);
+      }
+      return { wasReconnect };
+
     case 'git_panel_state':
       useGitPanelStore.getState().applyGitPanelData(msg.sessionId, msg.data);
       if (msg.data.diffStats !== undefined) {

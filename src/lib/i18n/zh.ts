@@ -12,6 +12,8 @@ export const zh: I18nMessages = {
       developmentDesc: 'CLI 连接、代理环境和工作树默认值。',
       git: 'Git',
       gitDesc: '分支命名、合并策略以及每个 git 操作发送给 AI 的提示词模板。',
+      integrations: '集成',
+      integrationsDesc: '连接 ClickUp 等外部工具,与 Tessera 同步任务。',
     },
     language: '语言',
     profile: {

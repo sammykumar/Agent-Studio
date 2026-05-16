@@ -10,6 +10,8 @@ export interface I18nMessages {
       developmentDesc: string;
       git: string;
       gitDesc: string;
+      integrations: string;
+      integrationsDesc: string;
     };
     language: string;
     profile: {

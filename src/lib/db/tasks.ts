@@ -4,7 +4,8 @@
 
 import { getDb } from './database';
 import logger from '../logger';
-import type { WorkflowStatus, TaskEntity, TaskSession } from '@/types/task-entity';
+import { generateTaskId } from '@/types/task-entity';
+import type { ExternalTaskSource, WorkflowStatus, TaskEntity, TaskSession } from '@/types/task-entity';
 import type { TaskPrState, TaskPrStatus } from '@/types/task-pr-status';
 
 export interface TaskRow {
@@ -27,8 +28,24 @@ export interface TaskRow {
   pr_unsupported: number;
   remote_branch_exists: number | null;
   pr_head_ref_oid: string | null;
+  external_source: string | null;
+  external_id: string | null;
+  external_url: string | null;
+  external_status: string | null;
+  external_last_synced: string | null;
   created_at: string;
   updated_at: string;
+}
+
+function readExternalLinkFromRow(row: TaskRow): TaskEntity['external'] {
+  if (!row.external_source || !row.external_id) return undefined;
+  return {
+    source: row.external_source as ExternalTaskSource,
+    id: row.external_id,
+    url: row.external_url ?? undefined,
+    status: row.external_status ?? undefined,
+    lastSynced: row.external_last_synced ?? undefined,
+  };
 }
 
 function readPrStatusFromRow(row: TaskRow): TaskPrStatus | undefined {
@@ -130,6 +147,7 @@ function mapRowToEntity(
     sessions: sessionData.sessions,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    external: readExternalLinkFromRow(row),
   };
 }
 
@@ -264,6 +282,183 @@ export function createTask(params: {
     now,
   );
   logger.info({ taskId: params.id, projectId: params.projectId }, 'Task created');
+}
+
+/**
+ * Insert-or-update a task linked to an external system (e.g. ClickUp).
+ *
+ * On insert: generates a new task_id, places the task at the bottom of the
+ * project's sort order, and leaves Tessera-specific fields (collection,
+ * worktree, summary, PR state) NULL.
+ *
+ * On update: only patches `title`, `workflow_status`, and the `external_*`
+ * columns. Worktree/summary/sort/collection/PR state stay untouched so a sync
+ * never clobbers local Tessera state for a linked task.
+ */
+export function upsertExternalTask(input: {
+  projectId: string;
+  externalSource: ExternalTaskSource;
+  externalId: string;
+  title: string;
+  workflowStatus: WorkflowStatus;
+  externalStatus: string;
+  externalUrl?: string;
+}): { taskId: string; created: boolean } {
+  const db = getDb();
+  const now = new Date().toISOString();
+
+  const existing = db.prepare(`
+    SELECT id FROM tasks WHERE external_source = ? AND external_id = ?
+  `).get(input.externalSource, input.externalId) as { id: string } | undefined;
+
+  if (existing) {
+    db.prepare(`
+      UPDATE tasks
+      SET title = ?,
+          workflow_status = ?,
+          external_status = ?,
+          external_url = ?,
+          external_last_synced = ?,
+          updated_at = ?
+      WHERE id = ?
+    `).run(
+      input.title,
+      input.workflowStatus,
+      input.externalStatus,
+      input.externalUrl ?? null,
+      now,
+      now,
+      existing.id,
+    );
+    return { taskId: existing.id, created: false };
+  }
+
+  const maxRow = db.prepare(`
+    SELECT COALESCE(MAX(sort_order), -1) AS max_order FROM tasks WHERE project_id = ?
+  `).get(input.projectId) as { max_order: number };
+  const nextOrder = (maxRow?.max_order ?? -1) + 1;
+  const taskId = generateTaskId();
+
+  db.prepare(`
+    INSERT INTO tasks (
+      id, project_id, title, collection_id, workflow_status, worktree_branch,
+      sort_order,
+      external_source, external_id, external_url, external_status, external_last_synced,
+      created_at, updated_at
+    ) VALUES (?, ?, ?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    taskId,
+    input.projectId,
+    input.title,
+    input.workflowStatus,
+    nextOrder,
+    input.externalSource,
+    input.externalId,
+    input.externalUrl ?? null,
+    input.externalStatus,
+    now,
+    now,
+    now,
+  );
+  logger.info({ taskId, projectId: input.projectId, externalId: input.externalId }, 'External task created');
+  return { taskId, created: true };
+}
+
+/**
+ * Archive every task linked to `externalSource` whose external_id is not in
+ * `presentExternalIds`. Used after a successful pull so tasks that vanished
+ * from the remote list are removed from the active board without losing local
+ * Tessera state (worktree, PR history, etc.). Returns archived task IDs.
+ */
+export function archiveTasksMissingFromExternal(
+  projectId: string,
+  externalSource: ExternalTaskSource,
+  presentExternalIds: string[],
+): string[] {
+  const db = getDb();
+  const now = new Date().toISOString();
+
+  const params: unknown[] = [projectId, externalSource];
+  let placeholders = '';
+  if (presentExternalIds.length > 0) {
+    placeholders = presentExternalIds.map(() => '?').join(', ');
+    params.push(...presentExternalIds);
+  }
+  const notInClause = placeholders.length > 0 ? `AND external_id NOT IN (${placeholders})` : '';
+
+  const rows = db.prepare(`
+    SELECT id FROM tasks
+    WHERE project_id = ?
+      AND external_source = ?
+      AND external_id IS NOT NULL
+      AND archived = 0
+      ${notInClause}
+  `).all(...params) as Array<{ id: string }>;
+
+  if (rows.length === 0) return [];
+
+  const ids = rows.map((r) => r.id);
+  const updatePlaceholders = ids.map(() => '?').join(', ');
+  db.prepare(`
+    UPDATE tasks
+    SET archived = 1, archived_at = ?, updated_at = ?
+    WHERE id IN (${updatePlaceholders})
+  `).run(now, now, ...ids);
+
+  logger.info({ projectId, externalSource, archivedTaskIds: ids }, 'External tasks archived (missing from remote)');
+  return ids;
+}
+
+/** Rows that already have an external link for a given source within a project. */
+export function getLinkedExternalTasks(
+  projectId: string,
+  externalSource: ExternalTaskSource,
+): Array<Pick<TaskRow, 'id' | 'external_id' | 'workflow_status' | 'external_status' | 'archived'>> {
+  const db = getDb();
+  const rows = db.prepare(`
+    SELECT id, external_id, workflow_status, external_status, archived
+    FROM tasks
+    WHERE project_id = ?
+      AND external_source = ?
+      AND external_id IS NOT NULL
+  `).all(projectId, externalSource) as Array<{
+    id: string;
+    external_id: string;
+    workflow_status: string;
+    external_status: string | null;
+    archived: number;
+  }>;
+  return rows.map((r) => ({
+    id: r.id,
+    external_id: r.external_id,
+    workflow_status: r.workflow_status,
+    external_status: r.external_status,
+    archived: r.archived,
+  }));
+}
+
+/**
+ * Lookup helper: returns the external link block for a task (used by the
+ * push path to short-circuit when a task isn't linked).
+ */
+export function getTaskExternalLink(
+  id: string,
+): { projectId: string; source: ExternalTaskSource; externalId: string; workflowStatus: WorkflowStatus } | undefined {
+  const db = getDb();
+  const row = db.prepare(`
+    SELECT project_id, external_source, external_id, workflow_status
+    FROM tasks
+    WHERE id = ?
+  `).get(id) as
+    | { project_id: string; external_source: string | null; external_id: string | null; workflow_status: string }
+    | undefined;
+  if (!row || !row.external_source || !row.external_id) return undefined;
+  return {
+    projectId: row.project_id,
+    source: row.external_source as ExternalTaskSource,
+    externalId: row.external_id,
+    workflowStatus: row.workflow_status as WorkflowStatus,
+  };
 }
 
 /**

@@ -12,6 +12,8 @@ export const ja: I18nMessages = {
       developmentDesc: 'CLI接続、エージェント環境、ワークツリーのデフォルト。',
       git: 'Git',
       gitDesc: 'ブランチ命名規則、マージ方式、アクション別プロンプトテンプレートを設定します。',
+      integrations: '連携',
+      integrationsDesc: 'ClickUp などの外部ツールを接続し、Tessera とタスクを同期します。',
     },
     language: '言語',
     profile: {

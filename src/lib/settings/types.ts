@@ -40,6 +40,19 @@ export interface TelemetrySettings {
   enabled: boolean;
 }
 
+export interface ClickUpUserSettings {
+  /** Empty string means not configured. */
+  personalToken: string;
+  /** Cached from /user for display in settings UI. */
+  username?: string;
+  /** Optional default workspace, pre-selected in project settings. */
+  workspaceId?: string;
+}
+
+export interface IntegrationsUserSettings {
+  clickup: ClickUpUserSettings;
+}
+
 export interface UserSettings {
   language: Language;
   profile: UserProfileSettings;
@@ -75,6 +88,7 @@ export interface UserSettings {
   /** User-customized keyboard shortcuts. Empty string = disabled. Missing key = use default. */
   shortcutOverrides: Partial<Record<ShortcutId, string>>;
   gitConfig: GitConfig;
+  integrations: IntegrationsUserSettings;
   version: string;
   lastModified: string;
 }
