@@ -308,8 +308,9 @@ export function upsertExternalTask(input: {
   const now = new Date().toISOString();
 
   const existing = db.prepare(`
-    SELECT id FROM tasks WHERE external_source = ? AND external_id = ?
-  `).get(input.externalSource, input.externalId) as { id: string } | undefined;
+    SELECT id FROM tasks
+    WHERE project_id = ? AND external_source = ? AND external_id = ?
+  `).get(input.projectId, input.externalSource, input.externalId) as { id: string } | undefined;
 
   if (existing) {
     db.prepare(`

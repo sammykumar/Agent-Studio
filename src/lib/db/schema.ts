@@ -4,7 +4,7 @@
  * This DB is the source of truth for projects, sessions, and conversation messages.
  */
 
-export const SCHEMA_VERSION = 26;
+export const SCHEMA_VERSION = 27;
 
 export const CREATE_TABLES = `
 CREATE TABLE IF NOT EXISTS _meta (
@@ -157,7 +157,7 @@ CREATE INDEX IF NOT EXISTS idx_tasks_collection
   ON tasks(collection_id);
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_tasks_external
-  ON tasks(external_source, external_id) WHERE external_id IS NOT NULL;
+  ON tasks(project_id, external_source, external_id) WHERE external_id IS NOT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_conv_messages_session
   ON conversation_messages(session_id, id ASC);

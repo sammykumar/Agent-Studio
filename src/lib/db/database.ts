@@ -974,6 +974,18 @@ function runMigrations(db: DatabaseWrapper, fromVersion: number): void {
     `);
     logger.info('Migration v26 applied: project_integrations table + tasks external_* columns');
   }
+
+  if (fromVersion < 27) {
+    // The v26 unique index keyed on (external_source, external_id) which
+    // prevented the same ClickUp task from existing in two Tessera projects.
+    // Re-scope by project_id so each project keeps its own copy.
+    db.exec(`
+      DROP INDEX IF EXISTS idx_tasks_external;
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_tasks_external
+        ON tasks(project_id, external_source, external_id) WHERE external_id IS NOT NULL;
+    `);
+    logger.info('Migration v27 applied: idx_tasks_external re-scoped to include project_id');
+  }
 }
 
 /**

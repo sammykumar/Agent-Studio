@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchWithClientId } from '@/lib/api/fetch-with-client-id';
+import { useSessionStore } from '@/stores/session-store';
 import { useTaskStore } from '@/stores/task-store';
 import type { ClickUpStatusMap } from '@/lib/db/project-integrations';
 
@@ -27,7 +28,38 @@ interface ProjectIntegration {
 }
 
 export default function ClickUpSettings() {
-  const projectId = useTaskStore((s) => s.currentProjectId);
+  const currentProjectId = useTaskStore((s) => s.currentProjectId);
+  const projects = useSessionStore((s) => s.projects);
+  const projectOptions = useMemo(
+    () =>
+      projects.map((p) => ({
+        // API routes key on `decodedPath` (e.g. /Users/.../tessera) — see
+        // /api/projects/[projectId]/integrations/clickup.
+        value: p.decodedPath,
+        label: p.displayName,
+      })),
+    [projects],
+  );
+
+  // Default to whichever project the user has open on the board; fall back to
+  // the first registered project so the panel works even when no board is open.
+  const initialProjectId = currentProjectId ?? projectOptions[0]?.value ?? null;
+  const [projectId, setProjectId] = useState<string | null>(initialProjectId);
+
+  // Sync project picker if the user opens a different board after mounting.
+  useEffect(() => {
+    if (currentProjectId && currentProjectId !== projectId) {
+      setProjectId(currentProjectId);
+    }
+  }, [currentProjectId, projectId]);
+
+  // Backfill the selection once the project list loads (panel can render
+  // before useSessionStore finishes its first fetch).
+  useEffect(() => {
+    if (!projectId && projectOptions[0]) {
+      setProjectId(projectOptions[0].value);
+    }
+  }, [projectId, projectOptions]);
 
   // Connection state
   const [connected, setConnected] = useState<boolean | null>(null);
@@ -278,8 +310,15 @@ export default function ClickUpSettings() {
         `Inserted ${data.inserted ?? 0}, updated ${data.updated ?? 0}, archived ${data.archived ?? 0}, failed ${data.failed ?? 0}`,
       );
       await loadProjectIntegration(projectId);
+      // Refresh the board immediately. If the synced project is the one the
+      // user is currently viewing, force-update `currentProjectId` + `tasks`
+      // so newly-pulled cards appear without waiting on the WS broadcast
+      // (which may be down due to a stale JWT, see "Cannot send to user, no
+      // connections" warnings in the server log).
       if (projectId) {
-        void useTaskStore.getState().loadTasks(projectId, { setCurrent: false });
+        const taskStore = useTaskStore.getState();
+        const setCurrent = taskStore.currentProjectId === projectId;
+        void taskStore.loadTasks(projectId, { setCurrent });
       }
     } catch (err) {
       console.error(err);
@@ -351,14 +390,35 @@ export default function ClickUpSettings() {
       {connected && (
         <section className="space-y-3 rounded-xl border border-(--divider) p-4">
           <h4 className="text-sm font-medium text-(--text-primary)">
-            Current project link
+            Project link
           </h4>
-          {!projectId ? (
+          {projectOptions.length === 0 ? (
             <p className="text-xs text-(--text-tertiary)">
-              Open a project to configure its ClickUp link.
+              No projects registered yet. Open or create one to configure its
+              ClickUp link.
             </p>
           ) : (
             <div className="space-y-3">
+              <SelectField
+                label="Tessera project"
+                value={projectId ?? ''}
+                onChange={(v) => {
+                  setProjectId(v || null);
+                  // Reset cascading state — the new project may map to a
+                  // different workspace/space/list.
+                  setTeamId('');
+                  setSpaceId('');
+                  setListId('');
+                  setSpaces([]);
+                  setLists([]);
+                  setStatuses([]);
+                  setStatusMap(null);
+                  setProjectIntegration(null);
+                  setSyncSummary(null);
+                  setSyncError(null);
+                }}
+                options={projectOptions}
+              />
               <SelectField
                 label="Workspace"
                 value={teamId}
