@@ -39,13 +39,22 @@ export function getOAuthConfig(): ClickUpOAuthConfig {
   return { clientId, clientSecret, redirectUriOverride };
 }
 
-export function resolveRedirectUri(req: NextRequest, config: ClickUpOAuthConfig): string {
-  if (config.redirectUriOverride) return config.redirectUriOverride;
-  // Prefer x-forwarded headers so the URI matches what the browser saw (reverse proxy).
+/**
+ * The origin the user's browser actually sees. Behind a reverse proxy / tunnel
+ * (Caddy, nginx, ngrok), req.nextUrl.origin resolves to the local bind address
+ * (e.g. http://0.0.0.0:5001), which is useless for redirecting the browser back.
+ * Prefer x-forwarded-* headers when present.
+ */
+export function getExternalOrigin(req: NextRequest): string {
   const forwardedProto =
     req.headers.get('x-forwarded-proto')?.split(',')[0]?.trim() || req.nextUrl.protocol.replace(':', '');
   const forwardedHost = req.headers.get('x-forwarded-host')?.split(',')[0]?.trim() || req.nextUrl.host;
-  return `${forwardedProto}://${forwardedHost}${CALLBACK_PATH}`;
+  return `${forwardedProto}://${forwardedHost}`;
+}
+
+export function resolveRedirectUri(req: NextRequest, config: ClickUpOAuthConfig): string {
+  if (config.redirectUriOverride) return config.redirectUriOverride;
+  return `${getExternalOrigin(req)}${CALLBACK_PATH}`;
 }
 
 export function buildAuthorizeUrl(args: {

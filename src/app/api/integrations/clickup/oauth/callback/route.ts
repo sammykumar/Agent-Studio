@@ -6,6 +6,7 @@ import {
   ClickUpOAuthConfigError,
   ClickUpOAuthError,
   exchangeCodeForToken,
+  getExternalOrigin,
   getOAuthConfig,
 } from '@/lib/integrations/clickup/oauth';
 import logger from '@/lib/logger';
@@ -32,7 +33,9 @@ function parseStateCookie(raw: string | undefined): StateCookiePayload | null {
 }
 
 function redirectBack(req: NextRequest, returnTo: string, params: Record<string, string>) {
-  const url = new URL(returnTo, req.nextUrl.origin);
+  // Build against the browser-visible origin, not req.nextUrl.origin (which is
+  // the local bind address behind a reverse proxy / tunnel).
+  const url = new URL(returnTo, getExternalOrigin(req));
   for (const [k, v] of Object.entries(params)) {
     url.searchParams.set(k, v);
   }
