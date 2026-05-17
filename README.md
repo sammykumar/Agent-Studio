@@ -111,7 +111,7 @@ The default port is `32123`. If that port is already in use, Agent Studio scans 
 To request a specific port:
 
 ```bash
-agent-studio --port 3100
+agent-studio --port 5001
 ```
 
 For Docker Compose:
@@ -225,7 +225,7 @@ Agent Studio uses a custom Node.js server for the Next.js app, WebSocket transpo
 npm run dev
 ```
 
-The development server uses port `3100` by default. To run on a different port, set `PORT`, for example `PORT=32124 npm run dev`.
+The development server uses port `5001` by default. To run on a different port, set `PORT`, for example `PORT=32124 npm run dev`.
 
 Supported environment variables:
 

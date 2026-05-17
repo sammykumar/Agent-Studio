@@ -14,9 +14,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Skip auth routes and static assets
+  // Skip auth routes and static assets. ClickUp's OAuth callback is hit by a
+  // cross-site redirect from app.clickup.com → us; the JWT cookie is
+  // sameSite=strict and gets stripped, so we identify the user from the
+  // (sameSite=lax) OAuth state cookie inside the handler instead.
   if (
     pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/integrations/clickup/oauth/callback') ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon')

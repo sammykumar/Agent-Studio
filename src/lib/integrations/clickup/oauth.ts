@@ -41,7 +41,7 @@ export function getOAuthConfig(): ClickUpOAuthConfig {
 
 export function resolveRedirectUri(req: NextRequest, config: ClickUpOAuthConfig): string {
   if (config.redirectUriOverride) return config.redirectUriOverride;
-  // Prefer x-forwarded headers so the URI matches what the browser saw (proxy / ngrok).
+  // Prefer x-forwarded headers so the URI matches what the browser saw (reverse proxy).
   const forwardedProto =
     req.headers.get('x-forwarded-proto')?.split(',')[0]?.trim() || req.nextUrl.protocol.replace(':', '');
   const forwardedHost = req.headers.get('x-forwarded-host')?.split(',')[0]?.trim() || req.nextUrl.host;

@@ -44,8 +44,14 @@ export async function GET(req: NextRequest) {
   const redirectUri = resolveRedirectUri(req, config);
   const authorizeUrl = buildAuthorizeUrl({ clientId: config.clientId, redirectUri, state });
 
+  // We bind the userId into the state cookie so the callback can identify the
+  // user even though the JWT cookie (sameSite=strict) won't survive ClickUp's
+  // cross-site redirect back. The state cookie itself is httpOnly + sameSite=lax
+  // and is set only after successful auth check above, so it's a trustworthy
+  // identity binding for the duration of the OAuth round-trip.
+  const cookiePayload = JSON.stringify({ state, userId: auth.userId, returnTo });
   const res = NextResponse.redirect(authorizeUrl, { status: 302 });
-  res.cookies.set(CLICKUP_OAUTH_STATE_COOKIE, `${state}:${returnTo}`, {
+  res.cookies.set(CLICKUP_OAUTH_STATE_COOKIE, cookiePayload, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     // sameSite must be 'lax' so the cookie is sent on ClickUp's top-level redirect back.

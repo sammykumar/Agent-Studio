@@ -47,7 +47,7 @@ npm install
 npm run dev
 ```
 
-The dev server runs through `server.ts` on port `3100` by default. Do not run `next dev` directly.
+The dev server runs through `server.ts` on port `5001` by default. Do not run `next dev` directly.
 
 ## Checks
 
