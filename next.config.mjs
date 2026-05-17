@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const localTelemetryEnabled = process.env.TESSERA_TELEMETRY_LOCAL === '1';
+const localTelemetryEnabled = process.env.AGENT_STUDIO_TELEMETRY_LOCAL === '1';
 const shouldEmbedPosthogToken =
   process.env.NODE_ENV !== 'development' || localTelemetryEnabled;
 const posthogProjectToken = shouldEmbedPosthogToken

@@ -1,0 +1,16 @@
+version: "3"
+
+# Repo-local ngrok config. Auth token is NOT stored here — set NGROK_AUTHTOKEN
+# in your shell (e.g. ~/.zshrc) and ngrok will pick it up automatically:
+#
+#   export NGROK_AUTHTOKEN=<your-token>
+#
+# Or run once globally:  ngrok config add-authtoken <your-token>
+# (in which case start with both configs:
+#   ngrok start agent-studio --config "$HOME/Library/Application Support/ngrok/ngrok.yml" --config ./ngrok.yml)
+
+tunnels:
+  agent-studio:
+    proto: http
+    addr: 3100
+    domain: agent-studio.ngrok-free.app
