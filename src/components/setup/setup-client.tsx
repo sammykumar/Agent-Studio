@@ -904,5 +904,5 @@ function buildSuggestionCopy(
   const target = suggestion.availableEnvironment === 'native'
     ? t('setup.windowsTools')
     : t('setup.wslTools');
-  return `${toolName} is ready in ${target}. You can switch tools or install it where Tessera is currently looking.`;
+  return `${toolName} is ready in ${target}. You can switch tools or install it where Agent Studio is currently looking.`;
 }

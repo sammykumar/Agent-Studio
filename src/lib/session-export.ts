@@ -2,9 +2,9 @@ import fs from 'fs/promises';
 import path from 'path';
 import logger from './logger';
 import { sessionHistory } from './session-history';
-import { getTesseraDataPath } from './tessera-data-dir';
+import { getAgentStudioDataPath } from './agent-studio-data-dir';
 
-const EXPORT_DIR = getTesseraDataPath('session-exports');
+const EXPORT_DIR = getAgentStudioDataPath('session-exports');
 
 function assertValidSessionId(sessionId: string): void {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(sessionId)) {

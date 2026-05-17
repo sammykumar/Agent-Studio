@@ -2,7 +2,7 @@
  * Background poller that periodically sweeps every branch-bound task and
  * reconciles its stored PR state with GitHub. Event-driven sync (after an
  * agent turn ends) handles most updates — this poller exists to catch
- * changes made outside the Tessera (team merge, branch delete, etc.).
+ * changes made outside the Agent Studio (team merge, branch delete, etc.).
  */
 
 import logger from '@/lib/logger';
@@ -16,10 +16,10 @@ import { syncAllEligibleSessionPrs } from './session-pr-sync';
 // 60s strikes a balance between staleness and gh-CLI / GitHub-API load.
 // The probe coalesces in-flight requests per task and only writes the DB
 // (+ broadcasts) when something actually changed, so a tighter cadence
-// stays cheap. Overrides via TESSERA_PR_POLL_INTERVAL_MS for testing.
+// stays cheap. Overrides via AGENT_STUDIO_PR_POLL_INTERVAL_MS for testing.
 const DEFAULT_POLL_INTERVAL_MS = 60_000;
 const POLL_INTERVAL_MS = (() => {
-  const raw = process.env.TESSERA_PR_POLL_INTERVAL_MS;
+  const raw = process.env.AGENT_STUDIO_PR_POLL_INTERVAL_MS;
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed >= 5_000
     ? parsed

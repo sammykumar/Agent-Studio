@@ -4,9 +4,9 @@ import type { UserSettings } from './types';
 import { DEFAULT_SETTINGS } from './defaults';
 import { normalizeUserSettings } from './provider-defaults';
 import logger from '../logger';
-import { getTesseraDataPath } from '../tessera-data-dir';
+import { getAgentStudioDataPath } from '../agent-studio-data-dir';
 
-const SETTINGS_DIR = getTesseraDataPath('settings');
+const SETTINGS_DIR = getAgentStudioDataPath('settings');
 
 export class SettingsManager {
   private static async ensureDir() {

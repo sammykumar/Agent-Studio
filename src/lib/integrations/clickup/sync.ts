@@ -1,5 +1,5 @@
 /**
- * ClickUp ↔ Tessera sync engine.
+ * ClickUp ↔ Agent Studio sync engine.
  *
  * Pull is the source of truth for everything except `workflow_status`, which
  * is bidirectional. Status push is fire-and-forget: a ClickUp outage must
@@ -24,7 +24,7 @@ type LoadSettingsFn = (userId: string, options?: { silent?: boolean }) => Promis
 // `this.ensureDir()` inside the static.
 const defaultLoadSettings: LoadSettingsFn = (userId, options) =>
   SettingsManager.load(userId, options);
-import { mapClickUpTaskToTessera, tesseraStatusToClickUp } from './mapping';
+import { mapClickUpTaskToAgentStudio, agentStudioStatusToClickUp } from './mapping';
 
 export interface ClickUpSyncEvent {
   type: 'sync_started' | 'sync_completed' | 'sync_failed' | 'task_upserted' | 'task_archived';
@@ -37,7 +37,7 @@ export interface ClickUpSyncEvent {
 
 type Listener = (event: ClickUpSyncEvent) => void;
 
-const GLOBAL_KEY = Symbol.for('tessera.clickupSync');
+const GLOBAL_KEY = Symbol.for('agent-studio.clickupSync');
 interface SyncState {
   listeners: Set<Listener>;
   inFlight: Map<string, Promise<PullResult>>;
@@ -151,7 +151,7 @@ export async function pullProjectClickUpTasks(
 
       for (const remote of remoteTasks) {
         try {
-          const mapped = mapClickUpTaskToTessera(remote, { statusMap });
+          const mapped = mapClickUpTaskToAgentStudio(remote, { statusMap });
           let resultTaskId = '';
           let wasCreated = false;
           withPullOrigin(remote.id, () => {
@@ -276,7 +276,7 @@ export async function pushTaskStatusToClickUp(
     const token = settings.integrations?.clickup?.personalToken?.trim();
     if (!token) return;
 
-    const status = tesseraStatusToClickUp(link.workflowStatus, integration.clickupStatusMap);
+    const status = agentStudioStatusToClickUp(link.workflowStatus, integration.clickupStatusMap);
     if (!status) {
       logger.warn(
         { taskId: opts.taskId, workflowStatus: link.workflowStatus },

@@ -133,7 +133,7 @@ export interface CliProvider {
   /**
    * Optional session-aware stdout parser.
    *
-   * Use this when the provider needs the Tessera session ID to resolve parser
+   * Use this when the provider needs the Agent Studio session ID to resolve parser
    * state or protocol bookkeeping.
    */
   parseSessionStdout?(sessionId: string, line: string): ParsedMessage[];

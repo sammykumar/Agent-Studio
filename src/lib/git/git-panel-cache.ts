@@ -17,7 +17,7 @@ interface CacheState {
   listeners: Set<Listener>;
 }
 
-const GLOBAL_KEY = Symbol.for('tessera.gitPanelCache');
+const GLOBAL_KEY = Symbol.for('agent-studio.gitPanelCache');
 const g = globalThis as unknown as { [GLOBAL_KEY]?: CacheState };
 
 function getState(): CacheState {

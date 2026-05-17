@@ -29,7 +29,7 @@ export interface SpawnOptions extends ProviderRuntimeControls {
    *   (e.g. --resume <sessionId>).
    * - When `resume` is false/absent: this is a new session and the provider
    *   should pass the ID as a session-creation hint (e.g. --session-id <id>),
-   *   so the CLI's session ID matches the Tessera's UUID.
+   *   so the CLI's session ID matches the Agent Studio's UUID.
    */
   sessionId?: string;
   /**

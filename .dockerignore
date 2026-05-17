@@ -15,7 +15,7 @@ next-env.d.ts
 
 data
 workspaces
-.tessera*
+.agent-studio*
 .tmp
 
 npm-debug.log*

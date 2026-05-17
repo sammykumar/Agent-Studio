@@ -26,7 +26,7 @@ export interface TelemetryRuntimeContext {
   channel: string;
 }
 
-const INSTALL_ID_KEY = 'tessera:telemetry:install-id';
+const INSTALL_ID_KEY = 'agent-studio:telemetry:install-id';
 const MAX_STRING_LENGTH = 100;
 const MAX_ARRAY_LENGTH = 20;
 

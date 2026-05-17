@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create a per-user temp directory to avoid collisions
-    const uploadDir = join(tmpdir(), 'tessera-uploads', auth.userId);
+    const uploadDir = join(tmpdir(), 'agent-studio-uploads', auth.userId);
     await mkdir(uploadDir, { recursive: true });
 
     // Preserve original filename with a UUID prefix to avoid conflicts

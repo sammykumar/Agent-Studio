@@ -1,4 +1,4 @@
-const GLOBAL_KEY = Symbol.for('tessera.worktreeDiffAutoPromoteSuppressedTasks');
+const GLOBAL_KEY = Symbol.for('agent-studio.worktreeDiffAutoPromoteSuppressedTasks');
 const g = globalThis as unknown as { [GLOBAL_KEY]?: Set<string> };
 
 function getSuppressedTaskIds(): Set<string> {

@@ -13,7 +13,7 @@ import type {
 import type { Language } from '../settings/types';
 import logger from '../logger';
 
-const CACHE_PATH = join(homedir(), '.claude', 'tessera-skill-analysis.json');
+const CACHE_PATH = join(homedir(), '.claude', 'agent-studio-skill-analysis.json');
 const MAX_CONTENT_PER_SKILL = 3000;
 const CLI_TIMEOUT_MS = 3 * 60 * 1000; // 3 min per CLI call
 const CONCURRENCY = 10;
@@ -622,7 +622,7 @@ Rules:
 }
 
 // Singleton via globalThis
-const SINGLETON_KEY = Symbol.for('tessera.skillAnalysisService');
+const SINGLETON_KEY = Symbol.for('agent-studio.skillAnalysisService');
 const _g = globalThis as unknown as Record<symbol, SkillAnalysisService>;
 export const skillAnalysisService = (_g[SINGLETON_KEY] ??= new SkillAnalysisService());
 

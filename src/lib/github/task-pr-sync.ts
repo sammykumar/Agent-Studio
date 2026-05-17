@@ -25,7 +25,7 @@ export interface TaskPrUpdate {
 
 type Listener = (update: TaskPrUpdate) => void;
 
-const GLOBAL_KEY = Symbol.for('tessera.taskPrSync');
+const GLOBAL_KEY = Symbol.for('agent-studio.taskPrSync');
 interface SyncState {
   listeners: Set<Listener>;
   inFlight: Map<string, Promise<void>>;

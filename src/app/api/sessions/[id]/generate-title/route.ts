@@ -9,7 +9,7 @@ import { broadcastSessionMutation, getOriginClientIdFromRequest } from '@/lib/ws
 /**
  * POST /api/sessions/[id]/generate-title
  *
- * Generates an AI title for a session by reading Tessera session-history,
+ * Generates an AI title for a session by reading Agent Studio session-history,
  * delegating to the session's own CLI provider, and updating the DB.
  */
 export async function POST(

@@ -1,5 +1,5 @@
 /**
- * ClickUp ↔ Tessera workflow-status mapping.
+ * ClickUp ↔ Agent Studio workflow-status mapping.
  *
  * Bidirectional: pulling translates ClickUp status name → WorkflowStatus,
  * pushing the inverse. Mapping is generated from a list's status set on first
@@ -15,7 +15,7 @@ function normalizeName(name: string): string {
 }
 
 /**
- * Best-effort default mapping from a list's statuses to Tessera workflow
+ * Best-effort default mapping from a list's statuses to Agent Studio workflow
  * buckets. Heuristics:
  *   todo        ← exact 'to do'|'open'|'todo'|'backlog'  → else first type='open'
  *   in_review   ← contains 'review' or 'qa'              → else null
@@ -80,9 +80,9 @@ export function defaultStatusMap(statuses: ClickUpStatus[]): ClickUpStatusMap {
 }
 
 /**
- * Translate a ClickUp task into the fields needed for upsert into Tessera.
+ * Translate a ClickUp task into the fields needed for upsert into Agent Studio.
  */
-export function mapClickUpTaskToTessera(
+export function mapClickUpTaskToAgentStudio(
   remote: ClickUpTask,
   ctx: { statusMap: ClickUpStatusMap },
 ): {
@@ -129,11 +129,11 @@ export function clickUpStatusToWorkflow(
 }
 
 /**
- * Inverse: pick the ClickUp status name to PUT when the user moves a Tessera
+ * Inverse: pick the ClickUp status name to PUT when the user moves a Agent Studio
  * task to a given workflow bucket. Returns empty string when the map is
  * missing that bucket — callers should treat that as "skip push".
  */
-export function tesseraStatusToClickUp(
+export function agentStudioStatusToClickUp(
   workflowStatus: WorkflowStatus,
   map: ClickUpStatusMap,
 ): string {

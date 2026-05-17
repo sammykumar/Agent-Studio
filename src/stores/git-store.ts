@@ -31,7 +31,7 @@ export const useGitStore = create<GitPanelUIState>()(
       setDrawerHeight: (height) => set({ drawerHeight: height }),
     }),
     {
-      name: 'tessera:git-panel',
+      name: 'agent-studio:git-panel',
       partialize: (state) => ({
         isOpen: state.isOpen,
         panelWidth: state.panelWidth,

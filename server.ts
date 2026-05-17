@@ -23,9 +23,9 @@ import { snapshotTelemetryStartupDataState } from './src/lib/telemetry/server-st
 import logger from './src/lib/logger';
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = process.env.TESSERA_HOST || process.env.HOST || '127.0.0.1';
+const hostname = process.env.AGENT_STUDIO_HOST || process.env.HOST || '127.0.0.1';
 const port = parseInt(process.env.PORT || (dev ? '3100' : '3000'), 10);
-const dir = process.env.TESSERA_APP_ROOT || process.cwd();
+const dir = process.env.AGENT_STUDIO_APP_ROOT || process.cwd();
 
 loadEnvConfig(dir, dev, console, true);
 snapshotTelemetryStartupDataState();
@@ -92,8 +92,8 @@ async function startServer() {
       env: process.env.NODE_ENV || 'development',
       }, 'Server started');
     const displayHost = hostname === '0.0.0.0' || hostname === '::' ? '127.0.0.1' : hostname;
-    if (process.env.TESSERA_CLI === '1') {
-      console.log(`\nTessera is running at:\n  http://${displayHost}:${port}\n\nPress Ctrl+C to stop.\n`);
+    if (process.env.AGENT_STUDIO_CLI === '1') {
+      console.log(`\nAgent Studio is running at:\n  http://${displayHost}:${port}\n\nPress Ctrl+C to stop.\n`);
     } else {
       console.log(`> Ready on http://${displayHost}:${port}`);
       console.log(`> WebSocket on ws://${displayHost}:${port}/ws`);

@@ -50,7 +50,7 @@ export function useSessionResume() {
 
         if (!response.ok) {
           if (response.status === 404) {
-            // Session metadata or workDir not found — load canonical Tessera history read-only
+            // Session metadata or workDir not found — load canonical Agent Studio history read-only
             toast.error(i18n.t('notifications.sessionFileNotFound'));
             try {
               const msgRes = await fetch(`/api/sessions/${sessionId}/messages`);

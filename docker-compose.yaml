@@ -1,6 +1,6 @@
 services:
-  tessera:
-    container_name: tessera
+  agent-studio:
+    container_name: agent-studio
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,13 +12,13 @@ services:
     ports:
       - "32123:32123"
     environment:
-      TESSERA_HOST: 0.0.0.0
+      AGENT_STUDIO_HOST: 0.0.0.0
     volumes:
-      - ./data/config:/home/tessera/.config
-      - ./data/local:/home/tessera/.local
-      - ./data/gitconfig:/home/tessera/.gitconfig
-      - ./data/ssh:/home/tessera/.ssh
-      - ./data/codex:/home/tessera/.codex
-      - ./data/tessera:/home/tessera/.tessera
-      - ./workspaces:/home/tessera/workspaces
+      - ./data/config:/home/agent-studio/.config
+      - ./data/local:/home/agent-studio/.local
+      - ./data/gitconfig:/home/agent-studio/.gitconfig
+      - ./data/ssh:/home/agent-studio/.ssh
+      - ./data/codex:/home/agent-studio/.codex
+      - ./data/agent-studio:/home/agent-studio/.agent-studio
+      - ./workspaces:/home/agent-studio/workspaces
     restart: unless-stopped

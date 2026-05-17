@@ -12,7 +12,7 @@ import { cliProviderRegistry, type CliProviderRegistry } from './providers/regis
 import type { CliProvider, ParsedMessage } from './providers/types';
 import type { CliRawLogEvent, CliRawLogSink } from './providers/session-types';
 import type { AgentEnvironment } from '@/lib/settings/types';
-import { getTesseraDataPath } from '@/lib/tessera-data-dir';
+import { getAgentStudioDataPath } from '@/lib/agent-studio-data-dir';
 import logger from '@/lib/logger';
 import type {
   CliDiagnosticExportResult,
@@ -28,7 +28,7 @@ const DEFAULT_RESPONSE_TIMEOUT_MS = 45_000;
 const ASSISTANT_PREVIEW_LIMIT = 240;
 const ERROR_PREVIEW_LIMIT = 500;
 const TELEMETRY_RAW_LOG_MAX_REPORT_BYTES = 12 * 1024 * 1024;
-const REPORTS_KEY = Symbol.for('tessera.cliDiagnostics.latestReports');
+const REPORTS_KEY = Symbol.for('agent-studio.cliDiagnostics.latestReports');
 
 type KillProcess = typeof gracefulKillProcess;
 
@@ -220,7 +220,7 @@ function sanitizeFilePart(value: string): string {
 }
 
 async function resolveRawLogDir(reportId: string, generatedAt: string): Promise<string> {
-  const dir = getTesseraDataPath(
+  const dir = getAgentStudioDataPath(
     'diagnostic-raw-logs',
     `${formatTimestampForFilename(generatedAt)}-${reportId.slice(0, 8)}`,
   );
@@ -397,7 +397,7 @@ function redactSensitiveRawLogText(value: string): string {
 }
 
 async function resolveDiagnosticWorkDir(workDir?: string): Promise<string> {
-  const resolved = workDir ?? getTesseraDataPath('diagnostics', 'workspace');
+  const resolved = workDir ?? getAgentStudioDataPath('diagnostics', 'workspace');
   await fs.mkdir(resolved, { recursive: true, mode: 0o700 });
   return resolved;
 }
@@ -871,7 +871,7 @@ export function renderCliDiagnosticMarkdown(report: CliDiagnosticReport): string
   ]);
 
   return [
-    '# Tessera CLI Diagnostics',
+    '# Agent Studio CLI Diagnostics',
     '',
     `- Report ID: ${report.id}`,
     `- Generated at: ${report.generatedAt}`,
@@ -891,7 +891,7 @@ export function renderCliDiagnosticMarkdown(report: CliDiagnosticReport): string
 export async function exportCliDiagnosticReport(
   report: CliDiagnosticReport,
 ): Promise<CliDiagnosticExportResult> {
-  const exportDir = getTesseraDataPath('diagnostic-reports');
+  const exportDir = getAgentStudioDataPath('diagnostic-reports');
   await fs.mkdir(exportDir, { recursive: true, mode: 0o700 });
 
   const baseName = `cli-diagnostics-${formatTimestampForFilename(report.generatedAt)}-${report.id.slice(0, 8)}`;

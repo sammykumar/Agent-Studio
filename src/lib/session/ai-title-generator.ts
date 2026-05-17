@@ -1,11 +1,11 @@
 /**
  * AI Title Generator
  *
- * Reads Tessera's own session-history JSONL → builds prompt →
+ * Reads Agent Studio's own session-history JSONL → builds prompt →
  * delegates to the active CLI provider's generateTitle() → returns { title }.
  *
  * Provider-agnostic: works with any CLI (Claude Code, Codex, Gemini, etc.)
- * because it reads from the Tessera's canonical history, not CLI-specific JSONL.
+ * because it reads from the Agent Studio's canonical history, not CLI-specific JSONL.
  */
 
 import { sessionHistory } from '@/lib/session-history';
@@ -26,7 +26,7 @@ export interface GeneratedTitle {
 }
 
 /**
- * Extract user and assistant text from Tessera's session-history JSONL.
+ * Extract user and assistant text from Agent Studio's session-history JSONL.
  * Event types: 'user_message' (content: string | ContentBlock[]),
  *              'assistant_message' (content: string).
  */
@@ -81,7 +81,7 @@ IMPORTANT: Output ONLY the JSON object. No explanation, no markdown, no conversa
 
 /**
  * Generate a title for a session using AI.
- * Reads conversation from Tessera session-history, delegates to the active
+ * Reads conversation from Agent Studio session-history, delegates to the active
  * CLI provider's generateTitle(), returns a title.
  *
  * @param sessionId - The session to generate a title for.

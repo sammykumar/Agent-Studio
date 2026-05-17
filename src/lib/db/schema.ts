@@ -1,5 +1,5 @@
 /**
- * SQLite schema definitions for Tessera's own database.
+ * SQLite schema definitions for Agent Studio's own database.
  *
  * This DB is the source of truth for projects, sessions, and conversation messages.
  */

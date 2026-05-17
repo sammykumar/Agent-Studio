@@ -1,7 +1,7 @@
 import { wsServer } from './server';
 
 export function getOriginClientIdFromRequest(req: Request | { headers: Headers }): string | undefined {
-  const value = req.headers.get('x-tessera-client-id');
+  const value = req.headers.get('x-agent-studio-client-id');
   return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 

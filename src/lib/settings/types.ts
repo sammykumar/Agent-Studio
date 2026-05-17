@@ -82,7 +82,7 @@ export interface UserSettings {
   archivedWorktreeRetentionDays: number;
   /**
    * Optional absolute worktree path template. Empty string keeps the automatic
-   * environment-aware Tessera managed root.
+   * environment-aware Agent Studio managed root.
    */
   managedWorktreePathTemplate: string;
   /** User-customized keyboard shortcuts. Empty string = disabled. Missing key = use default. */

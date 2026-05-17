@@ -6,7 +6,7 @@ import { useWorktreeRetentionSettingsUpdate } from '@/hooks/use-worktree-retenti
 const WORKTREE_PATH_TEMPLATE_EXAMPLES = [
   {
     labelKey: 'settings.worktree.pathTemplateDefaultLocation',
-    value: '~/.tessera/worktrees/{projectSlug}/{branchName}',
+    value: '~/.agent-studio/worktrees/{projectSlug}/{branchName}',
   },
   {
     labelKey: 'settings.worktree.pathTemplateExampleSibling',

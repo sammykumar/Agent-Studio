@@ -5,8 +5,8 @@ export async function fetchWithClientId(
   init?: RequestInit,
 ): Promise<Response> {
   const headers = new Headers(init?.headers ?? {});
-  if (!headers.has('x-tessera-client-id')) {
-    headers.set('x-tessera-client-id', getClientId());
+  if (!headers.has('x-agent-studio-client-id')) {
+    headers.set('x-agent-studio-client-id', getClientId());
   }
   return fetch(input, { ...init, headers });
 }

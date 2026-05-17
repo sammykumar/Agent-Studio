@@ -8,7 +8,7 @@ import { ElectronCloseDialog } from '@/components/layout/electron-close-dialog';
 import { TelemetryProvider } from '@/components/telemetry/telemetry-provider';
 
 export const metadata: Metadata = {
-  title: 'Tessera',
+  title: 'Agent Studio',
   description: 'Multi-provider chat development tool',
 };
 
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 const themeScript = `
 (function() {
   try {
-    var stored = localStorage.getItem('tessera:settings');
+    var stored = localStorage.getItem('agent-studio:settings');
     var settings = stored ? JSON.parse(stored).state.settings : {};
     var theme = settings.theme || 'auto';
     var isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);

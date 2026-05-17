@@ -146,7 +146,7 @@ interface SessionState {
   activeReasoningItemId: string | null;
 
   /**
-   * The thinkingId sent to the Tessera client for the current reasoning block.
+   * The thinkingId sent to the Agent Studio client for the current reasoning block.
    * Generated when the first reasoning delta for a new itemId arrives.
    */
   activeThinkingId: string | null;
@@ -161,7 +161,7 @@ interface SessionState {
   /**
    * Most recent cumulative thread token usage snapshot from Codex notifications.
    * Used to populate notification.usage on turn completion so the shared
-   * Tessera usage pipeline can persist Codex token stats like Claude.
+   * Agent Studio usage pipeline can persist Codex token stats like Claude.
    */
   latestUsage: {
     inputTokens: number;
@@ -174,7 +174,7 @@ interface SessionState {
   /**
    * The model identifier last configured for this session (set by the adapter
    * after spawn or model switch). Used to populate the modelUsage breakdown so
-   * the Tessera tooltip can label Codex token stats with the actual model name.
+   * the Agent Studio tooltip can label Codex token stats with the actual model name.
    */
   currentModel: string | null;
 
@@ -581,7 +581,7 @@ export class CodexProtocolParser {
    * Handles MCP elicitation requests from Codex app-server.
    *
    * Form-mode elicitations are mapped onto the AskUserQuestion UI. URL-mode
-   * elicitations need an allow/deny decision because Tessera currently has no
+   * elicitations need an allow/deny decision because Agent Studio currently has no
    * first-class browser handoff prompt.
    */
   private handleMcpServerElicitationRequest(
@@ -729,7 +729,7 @@ export class CodexProtocolParser {
     params: Record<string, any>,
   ): ParsedMessage[] {
     const tool = typeof params.tool === 'string' ? params.tool : 'unknown';
-    const message = `Codex dynamic tool calls are not supported by Tessera: ${tool}`;
+    const message = `Codex dynamic tool calls are not supported by Agent Studio: ${tool}`;
 
     logger.warn('Codex: dynamic tool call rejected as unsupported', {
       sessionId,
@@ -765,7 +765,7 @@ export class CodexProtocolParser {
     requestId: number | string,
     params: Record<string, any>,
   ): ParsedMessage[] {
-    const message = 'Codex ChatGPT auth token refresh is not supported by Tessera sessions.';
+    const message = 'Codex ChatGPT auth token refresh is not supported by Agent Studio sessions.';
 
     logger.warn('Codex: auth token refresh rejected as unsupported', {
       sessionId,
@@ -796,7 +796,7 @@ export class CodexProtocolParser {
     method: string,
     params: Record<string, any>,
   ): ParsedMessage[] {
-    const message = `Legacy Codex approval request is not supported by this Tessera provider: ${method}`;
+    const message = `Legacy Codex approval request is not supported by this Agent Studio provider: ${method}`;
 
     logger.warn('Codex: legacy approval request denied as unsupported', {
       sessionId,
@@ -1553,7 +1553,7 @@ export class CodexProtocolParser {
    * Emitted by the Codex app-server when a session has been configured.
    * Stores provider-specific resume state surfaced by the CLI.
    *
-   * Resume history rendering is handled by Tessera's own canonical JSONL, so
+   * Resume history rendering is handled by Agent Studio's own canonical JSONL, so
    * params.initial_messages is intentionally ignored here.
    */
   private handleSessionConfigured(sessionId: string, params: Record<string, any>): ParsedMessage[] {
@@ -1782,7 +1782,7 @@ export class CodexProtocolParser {
 
   /**
    * Raw reasoning text delta from the model.
-   * Maps to Tessera `thinking` (first delta) or `thinking_update` (subsequent).
+   * Maps to Agent Studio `thinking` (first delta) or `thinking_update` (subsequent).
    */
   private handleReasoningTextDelta(sessionId: string, params: Record<string, any>): ParsedMessage[] {
     return this.emitThinkingDelta(sessionId, params.itemId, params.delta);
@@ -2059,7 +2059,7 @@ export class CodexProtocolParser {
 
   /**
    * OpenAI usage reports cached input as a breakdown of input tokens, while the
-   * shared Tessera store expects cache tokens to live in a separate disjoint bucket.
+   * shared Agent Studio store expects cache tokens to live in a separate disjoint bucket.
    */
   private normalizeCodexInputBreakdown(
     inputTokens: number | null | undefined,
@@ -2322,7 +2322,7 @@ function isRecord(value: unknown): value is Record<string, any> {
 // Singleton
 // =============================================================================
 
-const PARSER_KEY = Symbol.for('tessera.codexProtocolParser');
+const PARSER_KEY = Symbol.for('agent-studio.codexProtocolParser');
 const _g = globalThis as unknown as Record<symbol, CodexProtocolParser>;
 export const codexProtocolParser: CodexProtocolParser =
   _g[PARSER_KEY] || (_g[PARSER_KEY] = new CodexProtocolParser());

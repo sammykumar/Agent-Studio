@@ -377,7 +377,7 @@ function loadByConvention(map: Map<string, SkillEntry>, pluginDir: string, plugi
 /**
  * Resolve the cached version directory for a plugin.
  * CLI reads all plugins (local and remote) from the cache directory at runtime,
- * so Tessera should do the same to stay consistent.
+ * so Agent Studio should do the same to stay consistent.
  */
 function resolveCachedPluginDir(
   marketplaceName: string,

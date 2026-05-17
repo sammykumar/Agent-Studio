@@ -238,7 +238,7 @@ export function useGitPanelController(sessionId: string | null) {
     const refreshOnVisible = () => {
       if (document.visibilityState !== "visible") return;
       // Ask the server to re-probe git state + PR status (covers work done
-      // outside Tessera — CLI push, external gh pr create, etc.). Don't await:
+      // outside Agent Studio — CLI push, external gh pr create, etc.). Don't await:
       // the WS broadcast and the loadPanel re-read below converge the UI.
       if (!isTransientSessionId(sessionId)) {
         void fetch(

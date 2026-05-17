@@ -4,7 +4,7 @@ import pino from 'pino';
 const _g = globalThis as unknown as Record<symbol, pino.Logger>;
 const kLogger = Symbol.for('app.logger');
 const defaultLogLevel =
-  process.env.NODE_ENV === 'production' || process.env.TESSERA_CLI === '1'
+  process.env.NODE_ENV === 'production' || process.env.AGENT_STUDIO_CLI === '1'
     ? 'error'
     : 'info';
 

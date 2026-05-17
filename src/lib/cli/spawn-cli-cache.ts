@@ -1,6 +1,6 @@
 import type { AgentEnvironment } from '../settings/types';
 
-const SPAWN_CACHE_KEY = Symbol.for('tessera.spawnCliCache');
+const SPAWN_CACHE_KEY = Symbol.for('agent-studio.spawnCliCache');
 
 export interface SpawnCliCache {
   agentEnvironmentByUserId: Map<string, AgentEnvironment>;

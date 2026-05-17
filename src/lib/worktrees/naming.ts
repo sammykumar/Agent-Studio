@@ -1,4 +1,4 @@
-export const MANAGED_WORKTREE_DISPLAY_ROOT = '~/.tessera/worktrees';
+export const MANAGED_WORKTREE_DISPLAY_ROOT = '~/.agent-studio/worktrees';
 
 const MANAGED_WORKTREE_PROJECT_FALLBACK = 'project';
 const MANAGED_WORKTREE_SLUG_PREVIEW = 'mmdd-xx';

@@ -59,7 +59,7 @@ test('listWorktreeBaseRefs returns local and remote refs, excludes remote HEAD, 
 });
 
 test('listWorktreeBaseRefs reads real local and remote refs from git', async () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tessera-base-refs-'));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-studio-base-refs-'));
   const remoteDir = path.join(tmp, 'remote.git');
   const repoDir = path.join(tmp, 'repo');
   try {
@@ -114,7 +114,7 @@ test('validateWorktreeBaseRef only accepts listed refs and verifies they point t
 });
 
 test('validated remote base refs can create a real worktree branch from that commit', async () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tessera-worktree-add-'));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-studio-worktree-add-'));
   const repoDir = path.join(tmp, 'repo');
   const worktreePath = path.join(tmp, 'worktrees', 'task');
   try {

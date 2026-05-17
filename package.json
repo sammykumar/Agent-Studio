@@ -1,20 +1,20 @@
 {
-  "name": "@horang-labs/tessera",
+  "name": "@sk-productions/agent-studio",
   "version": "0.1.5",
   "description": "Open-source web and desktop workspace for AI coding agents",
   "private": false,
   "license": "Apache-2.0",
   "author": {
-    "name": "Horang Labs, Inc."
+    "name": "SK Productions, LLC"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/horang-labs/tessera.git"
+    "url": "git+https://github.com/sammykumar/Agent-Studio.git"
   },
   "bugs": {
-    "url": "https://github.com/horang-labs/tessera/issues"
+    "url": "https://github.com/sammykumar/Agent-Studio/issues"
   },
-  "homepage": "https://github.com/horang-labs/tessera",
+  "homepage": "https://github.com/sammykumar/Agent-Studio",
   "publishConfig": {
     "access": "public"
   },
@@ -28,7 +28,7 @@
   ],
   "main": "dist-server/server.js",
   "bin": {
-    "tessera": "bin/tessera.mjs"
+    "agent-studio": "bin/agent-studio.mjs"
   },
   "files": [
     "bin/",
@@ -60,7 +60,7 @@
     "server:compile": "node -e \"require('fs').rmSync('dist-server',{recursive:true,force:true})\" && tsc -p tsconfig.server.json",
     "electron:compile": "node -e \"require('fs').rmSync('dist-electron',{recursive:true,force:true})\" && tsc -p electron/tsconfig.json",
     "electron:prepare-runtime": "node scripts/prepare-electron-runtime.mjs",
-    "electron:dev": "npm run electron:compile && concurrently -k -n SERVER,ELECTRON -c cyan,yellow \"cross-env NODE_ENV=development PORT=3100 TESSERA_ELECTRON_AUTH_BYPASS=1 npx tsx server.ts\" \"wait-on http://localhost:3100 && cross-env TESSERA_DEV_PORT=3100 electron dist-electron/electron/main.js\"",
+    "electron:dev": "npm run electron:compile && concurrently -k -n SERVER,ELECTRON -c cyan,yellow \"cross-env NODE_ENV=development PORT=3100 AGENT_STUDIO_ELECTRON_AUTH_BYPASS=1 npx tsx server.ts\" \"wait-on http://localhost:3100 && cross-env AGENT_STUDIO_DEV_PORT=3100 electron dist-electron/electron/main.js\"",
     "electron:prebuild": "npm run build && npm run electron:compile && npm run electron:prepare-runtime",
     "electron:prebuild:telemetry": "node scripts/with-posthog-telemetry-build.mjs npm run electron:prebuild",
     "electron:build:win": "npm run electron:prebuild && electron-builder --win portable --x64 --publish never",
@@ -68,9 +68,9 @@
     "electron:build:linux": "npm run electron:prebuild && electron-builder --linux AppImage deb --x64 --publish never",
     "electron:build:mac-x64": "npm run electron:prebuild && electron-builder --mac --x64 --publish never",
     "electron:build:mac-arm64": "npm run electron:prebuild && electron-builder --mac --arm64 --publish never",
-    "electron:build:mac-x64:signed": "npm run electron:prebuild && TESSERA_MAC_DISTRIBUTION=1 electron-builder --mac dmg --x64 --publish never --config.forceCodeSigning=true --config.mac.notarize=false && node scripts/notarize-mac-dmg.cjs x64",
-    "electron:build:mac-arm64:signed": "npm run electron:prebuild && TESSERA_MAC_DISTRIBUTION=1 electron-builder --mac dmg --arm64 --publish never --config.forceCodeSigning=true --config.mac.notarize=false && node scripts/notarize-mac-dmg.cjs arm64",
-    "electron:build:mac:signed": "npm run electron:prebuild && TESSERA_MAC_DISTRIBUTION=1 electron-builder --mac dmg --x64 --arm64 --publish never --config.forceCodeSigning=true --config.mac.notarize=false && node scripts/notarize-mac-dmg.cjs x64 arm64",
+    "electron:build:mac-x64:signed": "npm run electron:prebuild && AGENT_STUDIO_MAC_DISTRIBUTION=1 electron-builder --mac dmg --x64 --publish never --config.forceCodeSigning=true --config.mac.notarize=false && node scripts/notarize-mac-dmg.cjs x64",
+    "electron:build:mac-arm64:signed": "npm run electron:prebuild && AGENT_STUDIO_MAC_DISTRIBUTION=1 electron-builder --mac dmg --arm64 --publish never --config.forceCodeSigning=true --config.mac.notarize=false && node scripts/notarize-mac-dmg.cjs arm64",
+    "electron:build:mac:signed": "npm run electron:prebuild && AGENT_STUDIO_MAC_DISTRIBUTION=1 electron-builder --mac dmg --x64 --arm64 --publish never --config.forceCodeSigning=true --config.mac.notarize=false && node scripts/notarize-mac-dmg.cjs x64 arm64",
     "electron:build:all": "npm run electron:prebuild && electron-builder build --publish never",
     "npm:prepack": "npm run build && npm run server:compile",
     "prepack": "npm run npm:prepack",
@@ -140,9 +140,9 @@
     "npm": ">=10.0.0"
   },
   "build": {
-    "appId": "app.tessera.desktop",
-    "productName": "Tessera",
-    "copyright": "Copyright (c) 2026 Horang Labs, Inc.",
+    "appId": "app.agentstudio.desktop",
+    "productName": "Agent Studio",
+    "copyright": "Copyright (c) 2026 SK Productions, LLC",
     "afterPack": "scripts/electron-after-pack.cjs",
     "npmRebuild": false,
     "asar": true,
@@ -173,8 +173,8 @@
       ],
       "category": "Development",
       "icon": "assets/icon.png",
-      "maintainer": "Horang Labs, Inc. <faggomsa@gmail.com>",
-      "executableName": "tessera"
+      "maintainer": "SK Productions, LLC <sam@skproductions.llc>",
+      "executableName": "agent-studio"
     },
     "win": {
       "target": "portable",
@@ -189,15 +189,15 @@
       "entitlementsInherit": "scripts/entitlements.mac.plist"
     },
     "dmg": {
-      "artifactName": "Tessera-${version}-macos-${arch}.${ext}",
+      "artifactName": "Agent-Studio-${version}-macos-${arch}.${ext}",
       "sign": true
     },
     "portable": {
-      "artifactName": "Tessera-${version}-windows-${arch}.${ext}"
+      "artifactName": "Agent-Studio-${version}-windows-${arch}.${ext}"
     },
     "deb": {
-      "packageName": "tessera",
-      "artifactName": "Tessera-${version}-linux-${arch}.${ext}"
+      "packageName": "agent-studio",
+      "artifactName": "Agent-Studio-${version}-linux-${arch}.${ext}"
     }
   }
 }

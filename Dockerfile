@@ -19,7 +19,7 @@ COPY package.json package-lock.json ./
 
 RUN ELECTRON_SKIP_BINARY_DOWNLOAD=1 npm install
 
-FROM build-deps AS tessera-build
+FROM build-deps AS agent-studio-build
 
 COPY . .
 
@@ -36,36 +36,36 @@ RUN npm install --omit=dev
 
 FROM runtime-base AS runtime
 
-RUN useradd -m -s /bin/bash tessera && \
-  mkdir -p /opt/tessera /home/tessera/.npm-global /home/tessera/.local /home/tessera/.config /home/tessera/.ssh /home/tessera/go && \
-  chown -R tessera:tessera /home/tessera
+RUN useradd -m -s /bin/bash agent-studio && \
+  mkdir -p /opt/agent-studio /home/agent-studio/.npm-global /home/agent-studio/.local /home/agent-studio/.config /home/agent-studio/.ssh /home/agent-studio/go && \
+  chown -R agent-studio:agent-studio /home/agent-studio
 
-WORKDIR /opt/tessera
+WORKDIR /opt/agent-studio
 
 COPY --from=production-deps /build/node_modules ./node_modules
-COPY --from=tessera-build /build/package.json ./package.json
-COPY --from=tessera-build /build/next.config.mjs ./next.config.mjs
-COPY --from=tessera-build /build/bin ./bin
-COPY --from=tessera-build /build/dist-server ./dist-server
-COPY --from=tessera-build /build/.next ./.next
-COPY --from=tessera-build /build/public ./public
-COPY --from=tessera-build /build/assets ./assets
+COPY --from=agent-studio-build /build/package.json ./package.json
+COPY --from=agent-studio-build /build/next.config.mjs ./next.config.mjs
+COPY --from=agent-studio-build /build/bin ./bin
+COPY --from=agent-studio-build /build/dist-server ./dist-server
+COPY --from=agent-studio-build /build/.next ./.next
+COPY --from=agent-studio-build /build/public ./public
+COPY --from=agent-studio-build /build/assets ./assets
 
-RUN chmod +x /opt/tessera/bin/tessera.mjs && \
-  chown -R root:root /opt/tessera
+RUN chmod +x /opt/agent-studio/bin/agent-studio.mjs && \
+  chown -R root:root /opt/agent-studio
 
-ENV NPM_CONFIG_PREFIX=/home/tessera/.npm-global
-ENV PATH=/home/tessera/.bun/bin:/home/tessera/go/bin:${NPM_CONFIG_PREFIX}/bin:${PATH}
+ENV NPM_CONFIG_PREFIX=/home/agent-studio/.npm-global
+ENV PATH=/home/agent-studio/.bun/bin:/home/agent-studio/go/bin:${NPM_CONFIG_PREFIX}/bin:${PATH}
 
-USER tessera
+USER agent-studio
 
-RUN npm config set prefix /home/tessera/.npm-global && \
+RUN npm config set prefix /home/agent-studio/.npm-global && \
   npm i -g \
   @openai/codex@latest \
   opencode-ai@latest
 
-WORKDIR /home/tessera/workspaces
+WORKDIR /home/agent-studio/workspaces
 
 EXPOSE 32123
 
-ENTRYPOINT ["node", "/opt/tessera/bin/tessera.mjs"]
+ENTRYPOINT ["node", "/opt/agent-studio/bin/agent-studio.mjs"]

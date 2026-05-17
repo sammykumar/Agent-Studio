@@ -15,9 +15,9 @@ import type {
   SessionReplayEvent,
 } from './session-replay-types';
 import logger from './logger';
-import { getTesseraDataPath } from './tessera-data-dir';
+import { getAgentStudioDataPath } from './agent-studio-data-dir';
 
-const HISTORY_DIR = getTesseraDataPath('session-history');
+const HISTORY_DIR = getAgentStudioDataPath('session-history');
 const HISTORY_VERSION = 1;
 
 interface PendingThinkingState {
@@ -612,7 +612,7 @@ export function paginateReplayMessages(
   };
 }
 
-const HISTORY_KEY = Symbol.for('tessera.sessionHistoryStore');
+const HISTORY_KEY = Symbol.for('agent-studio.sessionHistoryStore');
 const historyGlobal = globalThis as unknown as Record<symbol, SessionHistoryStore>;
 
 export const sessionHistory =

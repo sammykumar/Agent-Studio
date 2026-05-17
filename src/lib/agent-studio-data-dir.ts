@@ -1,7 +1,7 @@
 import os from 'os';
 import path from 'path';
 
-export const TESSERA_DATA_DIR_ENV = 'TESSERA_DATA_DIR';
+export const AGENT_STUDIO_DATA_DIR_ENV = 'AGENT_STUDIO_DATA_DIR';
 
 export function expandHomePath(value: string, homeDir: string = os.homedir()): string {
   if (value === '~') return homeDir;
@@ -21,11 +21,11 @@ export function resolveConfiguredPath(
     : path.resolve(options.cwd ?? process.cwd(), expanded);
 }
 
-export function getTesseraDataDir(
+export function getAgentStudioDataDir(
   options: { env?: NodeJS.ProcessEnv; cwd?: string; homeDir?: string } = {}
 ): string {
   const env = options.env ?? process.env;
-  const configured = env[TESSERA_DATA_DIR_ENV]?.trim();
+  const configured = env[AGENT_STUDIO_DATA_DIR_ENV]?.trim();
 
   if (configured) {
     return resolveConfiguredPath(configured, {
@@ -34,9 +34,9 @@ export function getTesseraDataDir(
     });
   }
 
-  return path.join(options.homeDir ?? os.homedir(), '.tessera');
+  return path.join(options.homeDir ?? os.homedir(), '.agent-studio');
 }
 
-export function getTesseraDataPath(...segments: string[]): string {
-  return path.join(getTesseraDataDir(), ...segments);
+export function getAgentStudioDataPath(...segments: string[]): string {
+  return path.join(getAgentStudioDataDir(), ...segments);
 }

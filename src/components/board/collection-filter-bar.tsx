@@ -23,7 +23,7 @@ function getBoardPopoutApi(): ElectronApiBoardPopout | undefined {
 
 function isPopoutWindow(): boolean {
   if (typeof window === 'undefined') return false;
-  return Boolean((window as Window & { __TESSERA_POPOUT__?: boolean }).__TESSERA_POPOUT__);
+  return Boolean((window as Window & { __AGENT_STUDIO_POPOUT__?: boolean }).__AGENT_STUDIO_POPOUT__);
 }
 
 interface CollectionFilterBarProps {

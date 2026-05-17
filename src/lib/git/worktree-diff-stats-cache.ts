@@ -25,7 +25,7 @@ interface CacheState {
   listeners: Set<Listener>;
 }
 
-const GLOBAL_KEY = Symbol.for('tessera.worktreeDiffStatsCache');
+const GLOBAL_KEY = Symbol.for('agent-studio.worktreeDiffStatsCache');
 const g = globalThis as unknown as { [GLOBAL_KEY]?: CacheState };
 
 function getState(): CacheState {

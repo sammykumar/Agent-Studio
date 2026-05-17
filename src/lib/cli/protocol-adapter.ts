@@ -363,6 +363,6 @@ export class ProtocolAdapter {
 }
 
 // Singleton instance (globalThis to survive Next.js hot reload and webpack/tsx module boundary)
-const PA_KEY = Symbol.for('tessera.protocolAdapter');
+const PA_KEY = Symbol.for('agent-studio.protocolAdapter');
 const _g = globalThis as unknown as Record<symbol, ProtocolAdapter>;
 export const protocolAdapter: ProtocolAdapter = _g[PA_KEY] || (_g[PA_KEY] = new ProtocolAdapter());

@@ -9,15 +9,15 @@ const DEFAULT_PORT = 32123;
 const PORT_SCAN_LIMIT = 100;
 
 function usage() {
-  console.log(`Usage: tessera [--port PORT] [--host HOST]
+  console.log(`Usage: agent-studio [--port PORT] [--host HOST]
 
-Starts the local Tessera web UI server.
+Starts the local Agent Studio web UI server.
 
 Options:
   -p, --port PORT  Preferred port. Defaults to ${DEFAULT_PORT}, then scans upward.
   --host HOST      Host interface to bind. Defaults to ${DEFAULT_HOST}.
   -h, --help       Show this help message.
-  -v, --version    Show Tessera version.
+  -v, --version    Show Agent Studio version.
 `);
 }
 
@@ -28,7 +28,7 @@ function fail(message) {
 
 function parseArgs(argv) {
   const options = {
-    host: process.env.TESSERA_HOST || DEFAULT_HOST,
+    host: process.env.AGENT_STUDIO_HOST || DEFAULT_HOST,
     port: process.env.PORT ? Number(process.env.PORT) : DEFAULT_PORT,
   };
 
@@ -120,14 +120,14 @@ const port = await findPort(options.port, options.host);
 const serverEntry = path.join(root, 'dist-server', 'server.js');
 
 if (!fs.existsSync(serverEntry)) {
-  fail('production server build is missing. Reinstall @horang-labs/tessera or publish with npm run npm:prepack first.');
+  fail('production server build is missing. Reinstall @sk-productions/agent-studio or publish with npm run npm:prepack first.');
 }
 
 process.env.NODE_ENV = 'production';
 process.env.PORT = String(port);
-process.env.TESSERA_HOST = options.host;
-process.env.TESSERA_CLI = '1';
-process.env.TESSERA_APP_ROOT = root;
-process.env.TESSERA_CHANNEL = process.env.TESSERA_CHANNEL || 'npm';
+process.env.AGENT_STUDIO_HOST = options.host;
+process.env.AGENT_STUDIO_CLI = '1';
+process.env.AGENT_STUDIO_APP_ROOT = root;
+process.env.AGENT_STUDIO_CHANNEL = process.env.AGENT_STUDIO_CHANNEL || 'npm';
 
 await import(pathToFileURL(serverEntry).href);

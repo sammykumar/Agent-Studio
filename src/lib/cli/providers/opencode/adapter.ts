@@ -206,12 +206,12 @@ export class OpenCodeAdapter implements CliProvider {
       return { process: cliProcess, ok: false, error: spawnResult.error };
     }
 
-    const tesseraSessionId = options.sessionId ?? '__provider__';
+    const agentStudioSessionId = options.sessionId ?? '__provider__';
     const modelSelection = splitOpenCodeModelId(options.model);
     const baseModel = modelSelection.baseModelId;
     const reasoningEffort = options.reasoningEffort ?? modelSelection.reasoningEffort ?? null;
     this._processRuntimeConfig.set(cliProcess, {
-      sessionId: tesseraSessionId,
+      sessionId: agentStudioSessionId,
       cwd: cliWorkDir,
       opencodeSessionId: null,
       model: baseModel,
@@ -220,7 +220,7 @@ export class OpenCodeAdapter implements CliProvider {
       accessMode: options.accessMode,
     });
     opencodeProtocolParser.setSessionModel(
-      tesseraSessionId,
+      agentStudioSessionId,
       composeOpenCodeModelId(baseModel, reasoningEffort),
     );
 
@@ -233,13 +233,13 @@ export class OpenCodeAdapter implements CliProvider {
           opencodeSessionId,
         });
       }
-      if (tesseraSessionId !== '__provider__') {
-        updateProviderStateWithRetry(tesseraSessionId, { opencodeSessionId });
+      if (agentStudioSessionId !== '__provider__') {
+        updateProviderStateWithRetry(agentStudioSessionId, { opencodeSessionId });
       }
     } catch (err) {
       logger.error('OpenCodeAdapter: handshake failed', {
         error: (err as Error).message,
-        sessionId: tesseraSessionId,
+        sessionId: agentStudioSessionId,
       });
       cliProcess.kill('SIGTERM');
       return {
@@ -414,8 +414,8 @@ export class OpenCodeAdapter implements CliProvider {
     cwd: string,
     options: SpawnOptions,
   ): Promise<string> {
-    const tesseraSessionId = options.sessionId ?? '__provider__';
-    const startupReader = new OpenCodeStartupReader(proc, tesseraSessionId);
+    const agentStudioSessionId = options.sessionId ?? '__provider__';
+    const startupReader = new OpenCodeStartupReader(proc, agentStudioSessionId);
     this._startupReaders.set(proc, startupReader);
 
     let nextId = 1;
@@ -428,7 +428,7 @@ export class OpenCodeAdapter implements CliProvider {
         params: {
           protocolVersion: 1,
           clientCapabilities: {},
-          clientInfo: { name: 'tessera', version: '1.0.0' },
+          clientInfo: { name: 'agent-studio', version: '1.0.0' },
         },
       };
 
@@ -469,7 +469,7 @@ export class OpenCodeAdapter implements CliProvider {
     }
   }
 
-  private _sendSetModel(proc: ChildProcess, tesseraSessionId: string, model: string): boolean {
+  private _sendSetModel(proc: ChildProcess, agentStudioSessionId: string, model: string): boolean {
     const runtimeConfig = this._processRuntimeConfig.get(proc);
     if (!runtimeConfig?.opencodeSessionId) {
       return false;
@@ -486,14 +486,14 @@ export class OpenCodeAdapter implements CliProvider {
       },
     };
 
-    opencodeProtocolParser.setSessionModel(tesseraSessionId, model);
-    opencodeProtocolParser.trackPendingRequest(tesseraSessionId, requestId, 'session/set_model');
+    opencodeProtocolParser.setSessionModel(agentStudioSessionId, model);
+    opencodeProtocolParser.trackPendingRequest(agentStudioSessionId, requestId, 'session/set_model');
     return this._writeStdin(proc, 'set_model', `${JSON.stringify(request)}\n`);
   }
 
   private _sendSetMode(
     proc: ChildProcess,
-    tesseraSessionId: string,
+    agentStudioSessionId: string,
     sessionMode: NonNullable<ProviderRuntimeControls['sessionMode']>,
   ): boolean {
     const runtimeConfig = this._processRuntimeConfig.get(proc);
@@ -512,7 +512,7 @@ export class OpenCodeAdapter implements CliProvider {
       },
     };
 
-    opencodeProtocolParser.trackPendingRequest(tesseraSessionId, requestId, 'session/set_mode');
+    opencodeProtocolParser.trackPendingRequest(agentStudioSessionId, requestId, 'session/set_mode');
     return this._writeStdin(proc, 'set_mode', `${JSON.stringify(request)}\n`);
   }
 

@@ -17,7 +17,7 @@ assignees: ""
 
 ## Environment
 
-- Tessera version:
+- Agent Studio version:
 - Runtime: Windows desktop / macOS desktop / npm / source
 - OS:
 - CLI/provider, if relevant:

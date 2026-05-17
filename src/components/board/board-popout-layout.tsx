@@ -61,9 +61,9 @@ export function BoardPopoutLayout() {
   useCrossWindowUiSync();
 
   useEffect(() => {
-    (window as Window & { __TESSERA_POPOUT__?: boolean }).__TESSERA_POPOUT__ = true;
+    (window as Window & { __AGENT_STUDIO_POPOUT__?: boolean }).__AGENT_STUDIO_POPOUT__ = true;
     return () => {
-      (window as Window & { __TESSERA_POPOUT__?: boolean }).__TESSERA_POPOUT__ = false;
+      (window as Window & { __AGENT_STUDIO_POPOUT__?: boolean }).__AGENT_STUDIO_POPOUT__ = false;
     };
   }, []);
 
@@ -112,7 +112,7 @@ export function BoardPopoutLayout() {
             data-testid="board-popout-titlebar"
           >
             <div className="px-3 text-[0.8125rem] font-semibold text-(--text-muted) truncate">
-              Tessera Board
+              Agent Studio Board
             </div>
           </div>
         )}

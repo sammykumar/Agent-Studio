@@ -52,7 +52,7 @@ export function getVisibleProjects(): ProjectRow[] {
 }
 
 /**
- * Get projects that have Tessera conversation/task history, including closed
+ * Get projects that have Agent Studio conversation/task history, including closed
  * projects hidden from the active sidebar.
  */
 export function getProjectsWithHistory(): ProjectRow[] {

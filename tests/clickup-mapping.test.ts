@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   defaultStatusMap,
-  mapClickUpTaskToTessera,
-  tesseraStatusToClickUp,
+  mapClickUpTaskToAgentStudio,
+  agentStudioStatusToClickUp,
   clickUpStatusToWorkflow,
 } from '../src/lib/integrations/clickup/mapping';
 import type { ClickUpStatus, ClickUpTask } from '../src/lib/integrations/clickup/client';
@@ -48,7 +48,7 @@ test('defaultStatusMap falls back to status types when names are non-canonical',
   assert.equal(map.done, 'closed');
 });
 
-test('mapClickUpTaskToTessera produces every TaskRow input field', () => {
+test('mapClickUpTaskToAgentStudio produces every TaskRow input field', () => {
   const map = defaultStatusMap(STATUSES);
   const task: ClickUpTask = {
     id: 'abc',
@@ -56,7 +56,7 @@ test('mapClickUpTaskToTessera produces every TaskRow input field', () => {
     status: { status: 'in progress' },
     url: 'https://app.clickup.com/t/abc',
   };
-  const mapped = mapClickUpTaskToTessera(task, { statusMap: map });
+  const mapped = mapClickUpTaskToAgentStudio(task, { statusMap: map });
   assert.equal(mapped.externalId, 'abc');
   assert.equal(mapped.title, 'My task');
   assert.equal(mapped.workflowStatus, 'in_progress');
@@ -80,20 +80,20 @@ test('clickUpStatusToWorkflow falls back via heuristic on unknown statuses', () 
   assert.equal(clickUpStatusToWorkflow('???', map), 'todo');
 });
 
-test('tesseraStatusToClickUp inverts the status map for every workflow value', () => {
+test('agentStudioStatusToClickUp inverts the status map for every workflow value', () => {
   const map = defaultStatusMap(STATUSES);
-  assert.equal(tesseraStatusToClickUp('todo', map), 'to do');
-  assert.equal(tesseraStatusToClickUp('in_progress', map), 'in progress');
-  assert.equal(tesseraStatusToClickUp('in_review', map), 'in review');
-  assert.equal(tesseraStatusToClickUp('done', map), 'done');
+  assert.equal(agentStudioStatusToClickUp('todo', map), 'to do');
+  assert.equal(agentStudioStatusToClickUp('in_progress', map), 'in progress');
+  assert.equal(agentStudioStatusToClickUp('in_review', map), 'in review');
+  assert.equal(agentStudioStatusToClickUp('done', map), 'done');
 });
 
-test('round-trip: clickUpStatusToWorkflow then tesseraStatusToClickUp returns original mapping', () => {
+test('round-trip: clickUpStatusToWorkflow then agentStudioStatusToClickUp returns original mapping', () => {
   const map = defaultStatusMap(STATUSES);
   const cases = ['to do', 'in progress', 'in review', 'done'] as const;
   for (const status of cases) {
     const workflow = clickUpStatusToWorkflow(status, map);
-    const back = tesseraStatusToClickUp(workflow, map);
+    const back = agentStudioStatusToClickUp(workflow, map);
     assert.equal(back, status, `expected ${status} round trip`);
   }
 });

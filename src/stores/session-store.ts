@@ -36,7 +36,7 @@ interface SessionState {
   markSessionReadOnly: (sessionId: string, isReadOnly: boolean) => void;
   markSessionRunning: (
     sessionId: string,
-    tesseraSessionId: string,
+    agentStudioSessionId: string,
     runtimeConfig?: Pick<UnifiedSession, 'model' | 'reasoningEffort' | 'serviceTier' | 'sessionMode' | 'accessMode'>,
   ) => void;
   markSessionStopped: (sessionId: string) => void;
@@ -102,7 +102,7 @@ function mapApiSessionToUnified(s: any, fallbackProjectDir: string): UnifiedSess
     status: s.status as SessionStatus,
     lastModified: s.lastModified,
     createdAt: s.createdAt,
-    tesseraSessionId: s.isRunning ? s.id : undefined,
+    agentStudioSessionId: s.isRunning ? s.id : undefined,
     isReadOnly: s.isReadOnly ?? s.archived ?? false,
     hasCustomTitle: s.hasCustomTitle ?? false,
     workflowStatus: s.workflowStatus ?? undefined,
@@ -661,7 +661,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       })),
     })),
 
-  markSessionRunning: (sessionId, tesseraSessionId, runtimeConfig) => {
+  markSessionRunning: (sessionId, agentStudioSessionId, runtimeConfig) => {
     const providerId = get().getSession(sessionId)?.provider;
     if (providerId) {
       void captureTelemetryEvent('agent_session_started', {
@@ -679,7 +679,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
                 isRunning: true,
                 isReadOnly: false,
                 status: 'running' as SessionStatus,
-                tesseraSessionId,
+                agentStudioSessionId,
                 ...(runtimeConfig?.model !== undefined && { model: runtimeConfig.model }),
                 ...(runtimeConfig?.reasoningEffort !== undefined && {
                   reasoningEffort: runtimeConfig.reasoningEffort,
@@ -710,7 +710,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
                 ...s,
                 isRunning: false,
                 status: 'stopped' as SessionStatus,
-                tesseraSessionId: undefined,
+                agentStudioSessionId: undefined,
               }
             : s
         ),

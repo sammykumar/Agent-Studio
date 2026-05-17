@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { UpdateCheckResponse } from '@/lib/update/types';
 
-const DISMISSED_VERSION_KEY = 'tessera:update:dismissed-version';
+const DISMISSED_VERSION_KEY = 'agent-studio:update:dismissed-version';
 
 type UpdateStatus = 'idle' | 'checking' | UpdateCheckResponse['status'];
 

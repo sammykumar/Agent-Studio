@@ -2,7 +2,7 @@ import fs from 'fs';
 import logger from '@/lib/logger';
 import { getAgentEnvironment } from '@/lib/cli/spawn-cli';
 import { getRuntimePlatform } from '@/lib/system/runtime-platform';
-import { getTesseraDataPath } from '@/lib/tessera-data-dir';
+import { getAgentStudioDataPath } from '@/lib/agent-studio-data-dir';
 import { resolveAllowedTerminalCwd, resolveTerminalShell } from './terminal-resolver';
 import type {
   TerminalCreateOptions,
@@ -14,7 +14,7 @@ import type { ServerTransportMessage } from '@/lib/ws/message-types';
 
 type SendToUser = (userId: string, message: ServerTransportMessage) => void;
 const MAX_REPLAY_BUFFER_CHARS = 200_000;
-const TERMINAL_TRACE_PATH = getTesseraDataPath('terminal-debug.log');
+const TERMINAL_TRACE_PATH = getAgentStudioDataPath('terminal-debug.log');
 
 function hasUtf8Locale(value: string | undefined): boolean {
   return /\butf-?8\b/i.test(value ?? '');
@@ -58,7 +58,7 @@ async function loadNodePty(): Promise<TerminalPtyFactory> {
 }
 
 function traceTerminalStage(stage: string, metadata: Record<string, unknown> = {}): void {
-  if (process.env.TESSERA_TERMINAL_DEBUG !== '1') return;
+  if (process.env.AGENT_STUDIO_TERMINAL_DEBUG !== '1') return;
 
   try {
     fs.appendFileSync(

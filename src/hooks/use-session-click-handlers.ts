@@ -20,7 +20,7 @@ export function tryForwardClickToMainWindow(
   action: 'preview' | 'pin' = 'preview'
 ): boolean {
   if (typeof window === 'undefined') return false;
-  const popoutFlag = (window as Window & { __TESSERA_POPOUT__?: boolean }).__TESSERA_POPOUT__;
+  const popoutFlag = (window as Window & { __AGENT_STUDIO_POPOUT__?: boolean }).__AGENT_STUDIO_POPOUT__;
   if (!popoutFlag) return false;
   const electronApi = (window as Window & { electronAPI?: PopoutElectronApi }).electronAPI;
   if (!electronApi?.isElectron || !electronApi.popoutOpenSession) return false;

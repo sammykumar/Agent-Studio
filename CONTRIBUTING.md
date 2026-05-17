@@ -1,6 +1,6 @@
-# Contributing to Tessera
+# Contributing to Agent Studio
 
-Thanks for your interest in Tessera. The best contributions are small, reproducible, and easy to review.
+Thanks for your interest in Agent Studio. The best contributions are small, reproducible, and easy to review.
 
 ## Start Here
 
@@ -36,7 +36,7 @@ Small pull requests are reviewed fastest. If your change touches multiple areas,
 
 ## Cross-Platform Support
 
-Tessera supports the npm runtime and desktop builds across Windows, macOS, and Linux. When changing runtime, filesystem, process spawning, shell, path, Electron, or CLI-provider behavior, keep cross-platform behavior in mind.
+Agent Studio supports the npm runtime and desktop builds across Windows, macOS, and Linux. When changing runtime, filesystem, process spawning, shell, path, Electron, or CLI-provider behavior, keep cross-platform behavior in mind.
 
 Test on the platforms you can access, and note what you tested in the PR. If you could not test a relevant platform, mention that too.
 

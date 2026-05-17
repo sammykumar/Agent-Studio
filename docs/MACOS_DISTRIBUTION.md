@@ -20,12 +20,12 @@ security find-identity -v -p codesigning
 For a local keychain profile:
 
 ```bash
-xcrun notarytool store-credentials "tessera-notary" \
+xcrun notarytool store-credentials "agent-studio-notary" \
   --apple-id "you@example.com" \
   --team-id "TEAMID1234" \
   --password "app-specific-password"
 
-export APPLE_KEYCHAIN_PROFILE=tessera-notary
+export APPLE_KEYCHAIN_PROFILE=agent-studio-notary
 ```
 
 If more than one Developer ID identity is installed, pin the certificate:
@@ -47,7 +47,7 @@ Or build both architectures:
 npm run electron:build:mac:signed
 ```
 
-The notarization helper streams `notarytool` output so CI logs show the upload progress, submission ID, and `In Progress` polling status. It defaults to a `45m` notary wait timeout; override with `TESSERA_NOTARY_TIMEOUT=90m` if Apple notarization is slow. It also disables S3 transfer acceleration by default for more predictable CI uploads; set `TESSERA_NOTARY_DISABLE_S3_ACCELERATION=0` to use Apple's default upload path.
+The notarization helper streams `notarytool` output so CI logs show the upload progress, submission ID, and `In Progress` polling status. It defaults to a `45m` notary wait timeout; override with `AGENT_STUDIO_NOTARY_TIMEOUT=90m` if Apple notarization is slow. It also disables S3 transfer acceleration by default for more predictable CI uploads; set `AGENT_STUDIO_NOTARY_DISABLE_S3_ACCELERATION=0` to use Apple's default upload path.
 
 The final DMG is signed with the Developer ID Application identity before notarization. The helper fails early if the DMG has no usable code signature, then validates the stapled ticket and Gatekeeper assessment after notarization.
 
@@ -76,10 +76,10 @@ Apple ID notarization also works if the API key secrets are not set:
 After a signed build, verify each DMG:
 
 ```bash
-xcrun stapler validate release/Tessera-*-macos-arm64.dmg
-xcrun stapler validate release/Tessera-*-macos-x64.dmg
-spctl --assess --type open --context context:primary-signature --verbose release/Tessera-*-macos-arm64.dmg
-spctl --assess --type open --context context:primary-signature --verbose release/Tessera-*-macos-x64.dmg
+xcrun stapler validate release/Agent Studio-*-macos-arm64.dmg
+xcrun stapler validate release/Agent Studio-*-macos-x64.dmg
+spctl --assess --type open --context context:primary-signature --verbose release/Agent Studio-*-macos-arm64.dmg
+spctl --assess --type open --context context:primary-signature --verbose release/Agent Studio-*-macos-x64.dmg
 ```
 
 The unsigned scripts remain available for local packaging tests only:

@@ -85,7 +85,7 @@ export interface PersistedPanelLayout {
 }
 
 // localStorage 키 상수
-export const PANEL_LAYOUT_STORAGE_KEY = 'tessera-panel-layout' as const;
+export const PANEL_LAYOUT_STORAGE_KEY = 'agent-studio-panel-layout' as const;
 
 // 세션 드래그 MIME 타입 (session-item.tsx → panel-wrapper.tsx 간 공유)
 export const SESSION_DRAG_MIME = 'application/x-session-drag' as const;

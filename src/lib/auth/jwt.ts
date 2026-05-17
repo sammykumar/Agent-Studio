@@ -14,8 +14,8 @@ export async function generateToken(userId: string, username: string): Promise<s
   const payload: Omit<JWTPayload, 'iat' | 'exp'> = {
     sub: userId,
     username,
-    iss: 'tessera',
-    aud: 'tessera-users',
+    iss: 'agent-studio',
+    aud: 'agent-studio-users',
   };
 
   return jwt.sign(payload, privateKey, {
@@ -36,8 +36,8 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
 
     const decoded = jwt.verify(token, publicKey, {
       algorithms: ['RS256'],
-      issuer: 'tessera',
-      audience: 'tessera-users',
+      issuer: 'agent-studio',
+      audience: 'agent-studio-users',
       clockTolerance: 60,
     }) as JWTPayload;
 

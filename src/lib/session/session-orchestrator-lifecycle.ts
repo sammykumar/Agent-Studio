@@ -138,17 +138,17 @@ export async function resumeSessionWithLifecycle({
   const opencodeSessionId = dbSessions.extractOpenCodeSessionId(session.provider_state);
   const workDir = options.workDir || process.cwd();
 
-  // Claude Code: if no Tessera history yet, the CLI has no record of this session.
+  // Claude Code: if no Agent Studio history yet, the CLI has no record of this session.
   // Spawn fresh with --session-id instead of --resume so the CLI doesn't error
   // with "No conversation found". Load history lazily only when needed later.
-  let hasTesseraHistory: boolean | null = null;
+  let hasAgentStudioHistory: boolean | null = null;
   let useResume = true;
   if (providerId === 'claude-code') {
-    hasTesseraHistory = await sessionHistory.historyExists(sessionId);
-    useResume = hasTesseraHistory;
+    hasAgentStudioHistory = await sessionHistory.historyExists(sessionId);
+    useResume = hasAgentStudioHistory;
   } else if (providerId === 'codex') {
-    hasTesseraHistory = await sessionHistory.historyExists(sessionId);
-    if (!threadId && hasTesseraHistory) {
+    hasAgentStudioHistory = await sessionHistory.historyExists(sessionId);
+    if (!threadId && hasAgentStudioHistory) {
       logger.warn('Codex session has canonical history but no threadId; refusing fresh thread/start', {
         userId,
         sessionId,
@@ -166,8 +166,8 @@ export async function resumeSessionWithLifecycle({
     }
     useResume = !!threadId;
   } else if (providerId === 'opencode') {
-    hasTesseraHistory = await sessionHistory.historyExists(sessionId);
-    if (!opencodeSessionId && hasTesseraHistory) {
+    hasAgentStudioHistory = await sessionHistory.historyExists(sessionId);
+    if (!opencodeSessionId && hasAgentStudioHistory) {
       logger.warn('OpenCode session has canonical history but no ACP session id; refusing fresh session/new', {
         userId,
         sessionId,
@@ -208,11 +208,11 @@ export async function resumeSessionWithLifecycle({
     },
   );
 
-  if (hasTesseraHistory === null) {
-    hasTesseraHistory = await sessionHistory.historyExists(sessionId);
+  if (hasAgentStudioHistory === null) {
+    hasAgentStudioHistory = await sessionHistory.historyExists(sessionId);
   }
 
-  if (!cliSessionId && providerId === 'codex' && threadId && !hasTesseraHistory) {
+  if (!cliSessionId && providerId === 'codex' && threadId && !hasAgentStudioHistory) {
     logger.warn('Codex resume failed without canonical history; retrying with thread/start', {
       userId,
       sessionId,
@@ -239,7 +239,7 @@ export async function resumeSessionWithLifecycle({
     );
   }
 
-  if (!cliSessionId && providerId === 'opencode' && opencodeSessionId && !hasTesseraHistory) {
+  if (!cliSessionId && providerId === 'opencode' && opencodeSessionId && !hasAgentStudioHistory) {
     logger.warn('OpenCode resume failed without canonical history; retrying with session/new', {
       userId,
       sessionId,
@@ -304,8 +304,8 @@ export async function resumeSessionWithLifecycle({
 }
 
 async function loadReadOnlyReplayState(sessionId: string): Promise<ResumeReplayState> {
-  const hasTesseraHistory = await sessionHistory.historyExists(sessionId);
-  if (hasTesseraHistory) {
+  const hasAgentStudioHistory = await sessionHistory.historyExists(sessionId);
+  if (hasAgentStudioHistory) {
     return sessionHistory.readReplayState(sessionId, { lazyToolOutput: false });
   }
 

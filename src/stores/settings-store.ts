@@ -267,7 +267,7 @@ export const useSettingsStore = create<SettingsState>()(
       },
     }),
     {
-      name: 'tessera:settings',
+      name: 'agent-studio:settings',
       partialize: (state) => ({
         settings: state.settings,
         sidebarCollapsed: state.sidebarCollapsed,

@@ -4,9 +4,9 @@ import os from 'node:os';
 import path from 'node:path';
 import test, { before } from 'node:test';
 
-const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'tessera-clickup-sync-'));
-process.env.TESSERA_DATA_DIR = TMP;
-process.env.TESSERA_PRODUCTION_DB = '1';
+const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-studio-clickup-sync-'));
+process.env.AGENT_STUDIO_DATA_DIR = TMP;
+process.env.AGENT_STUDIO_PRODUCTION_DB = '1';
 
 let initialized = false;
 

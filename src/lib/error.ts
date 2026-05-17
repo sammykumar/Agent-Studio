@@ -8,7 +8,7 @@ export function createAuthError(
   instance: string
 ): AuthError {
   return {
-    type: `urn:tessera:error:${type}`,
+    type: `urn:agent-studio:error:${type}`,
     title,
     status,
     detail,

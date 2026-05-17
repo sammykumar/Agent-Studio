@@ -11,7 +11,7 @@ import { broadcastSessionMutation, getOriginClientIdFromRequest } from '@/lib/ws
  * PATCH /api/sessions/[id]/archive
  *
  * Updates the archive status for a session.
- * Persists to ~/.tessera/task-metadata.json.
+ * Persists to ~/.agent-studio/task-metadata.json.
  * Invalidates the project cache.
  */
 export async function PATCH(

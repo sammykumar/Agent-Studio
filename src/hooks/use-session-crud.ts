@@ -191,7 +191,7 @@ export function useSessionCrud() {
           status: result.status,
           createdAt: result.createdAt,
           lastModified: result.createdAt,
-          tesseraSessionId: result.sessionId,
+          agentStudioSessionId: result.sessionId,
           archived: false,
           sortOrder: 0,
           worktreeBranch,

@@ -113,7 +113,7 @@ export function isBinaryAvailable(binaryName: string): boolean {
  * Singleton registry instance — uses globalThis to survive Next.js hot reload
  * and webpack/tsx module boundary (API routes get a separate module scope).
  */
-const REGISTRY_KEY = Symbol.for('tessera.cliProviderRegistry');
+const REGISTRY_KEY = Symbol.for('agent-studio.cliProviderRegistry');
 const _g = globalThis as unknown as Record<symbol, CliProviderRegistry>;
 
 export const cliProviderRegistry: CliProviderRegistry =

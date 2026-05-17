@@ -17,7 +17,7 @@ function buildEmptyHistoryResponse(sessionId: string): NextResponse {
 /**
  * GET /api/sessions/[id]/messages
  *
- * Reads session messages from Tessera-managed canonical JSONL history.
+ * Reads session messages from Agent Studio-managed canonical JSONL history.
  *
  * Query params:
  *   - limit (default: 100): Number of messages per page (max 500)
@@ -46,7 +46,7 @@ export async function GET(
 
     const hasHistory = await sessionHistory.historyExists(id);
     if (!hasHistory) {
-      logger.info({ userId, sessionId: id, provider: dbSession.provider }, 'Session has no Tessera history yet');
+      logger.info({ userId, sessionId: id, provider: dbSession.provider }, 'Session has no Agent Studio history yet');
       return buildEmptyHistoryResponse(id);
     }
 

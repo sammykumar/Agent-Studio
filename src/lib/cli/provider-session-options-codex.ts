@@ -246,7 +246,7 @@ async function probeCodexModels(
       method: 'initialize',
       params: {
         protocolVersion: '2025-01-01',
-        clientInfo: { name: 'tessera', version: '1.0.0' },
+        clientInfo: { name: 'agent-studio', version: '1.0.0' },
       },
     });
   });

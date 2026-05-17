@@ -71,7 +71,7 @@ jobs:
       - name: Isolate Windows user profile for build
         shell: pwsh
         run: |
-          $safeHome = Join-Path $env:RUNNER_TEMP 'tessera-home'
+          $safeHome = Join-Path $env:RUNNER_TEMP 'agent-studio-home'
           $safeAppData = Join-Path $safeHome 'AppData\Roaming'
           $safeLocalAppData = Join-Path $safeHome 'AppData\Local'
 
@@ -92,7 +92,7 @@ jobs:
       - name: Upload desktop artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tessera-windows-x64
+          name: agent-studio-windows-x64
           path: release/*.exe
           if-no-files-found: error
           retention-days: 7
@@ -173,13 +173,13 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.MACOS_CSC_KEY_PASSWORD }}
           CSC_LINK: ${{ secrets.MACOS_CSC_LINK }}
           NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: ${{ secrets.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN }}
-          TESSERA_NOTARY_TIMEOUT: 90m
+          AGENT_STUDIO_NOTARY_TIMEOUT: 90m
         run: npm run electron:build:mac-${{ matrix.arch }}:signed
 
       - name: Verify DMG
         run: |
           version="$(node -p "require('./package.json').version")"
-          dmg="release/Tessera-${version}-macos-${{ matrix.arch }}.dmg"
+          dmg="release/Agent-Studio-${version}-macos-${{ matrix.arch }}.dmg"
           test -f "$dmg"
           hdiutil verify "$dmg"
           xcrun stapler validate "$dmg"
@@ -188,8 +188,8 @@ jobs:
       - name: Upload desktop artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tessera-macos-${{ matrix.arch }}
-          path: release/Tessera-*-macos-${{ matrix.arch }}.dmg
+          name: agent-studio-macos-${{ matrix.arch }}
+          path: release/Agent-Studio-*-macos-${{ matrix.arch }}.dmg
           if-no-files-found: error
           retention-days: 7
 
@@ -238,29 +238,29 @@ jobs:
         run: |
           set -euo pipefail
           version="$(node -p "require('./package.json').version")"
-          appimage="release/Tessera-${version}.AppImage"
-          deb="release/Tessera-${version}-linux-amd64.deb"
+          appimage="release/Agent-Studio-${version}.AppImage"
+          deb="release/Agent-Studio-${version}-linux-amd64.deb"
 
           test -f "$appimage"
           test -f "$deb"
           file "$appimage" "$deb"
           dpkg-deb --info "$deb"
-          dpkg-deb --contents "$deb" | grep -F '/usr/share/applications/tessera.desktop'
+          dpkg-deb --contents "$deb" | grep -F '/usr/share/applications/agent-studio.desktop'
 
       - name: Smoke test AppImage startup
         run: |
           set -euo pipefail
           version="$(node -p "require('./package.json').version")"
-          appimage="release/Tessera-${version}.AppImage"
-          smoke_dir="$RUNNER_TEMP/tessera-linux-smoke"
-          stdout_log="$RUNNER_TEMP/tessera-appimage-smoke.out"
-          devtools_json="$RUNNER_TEMP/tessera-devtools.json"
+          appimage="release/Agent-Studio-${version}.AppImage"
+          smoke_dir="$RUNNER_TEMP/agent-studio-linux-smoke"
+          stdout_log="$RUNNER_TEMP/agent-studio-appimage-smoke.out"
+          devtools_json="$RUNNER_TEMP/agent-studio-devtools.json"
 
           rm -rf "$smoke_dir"
           xvfb-run -a env \
-            TESSERA_DATA_DIR="$smoke_dir" \
-            TESSERA_ELECTRON_LOG_LEVEL=debug \
-            TESSERA_DISABLE_GPU=1 \
+            AGENT_STUDIO_DATA_DIR="$smoke_dir" \
+            AGENT_STUDIO_ELECTRON_LOG_LEVEL=debug \
+            AGENT_STUDIO_DISABLE_GPU=1 \
             "$appimage" \
             --appimage-extract-and-run \
             --no-sandbox \
@@ -272,19 +272,19 @@ jobs:
           cleanup() {
             kill "$app_pid" 2>/dev/null || true
             wait "$app_pid" 2>/dev/null || true
-            cat "$smoke_dir/tessera-main.log" 2>/dev/null || true
+            cat "$smoke_dir/agent-studio-main.log" 2>/dev/null || true
             cat "$smoke_dir/startup.log" 2>/dev/null || true
           }
           trap cleanup EXIT
 
           for _ in {1..60}; do
-            if curl -fsS http://127.0.0.1:9333/json/list > "$devtools_json" 2>/dev/null && grep -q '"title": "Tessera"' "$devtools_json"; then
+            if curl -fsS http://127.0.0.1:9333/json/list > "$devtools_json" 2>/dev/null && grep -q '"title": "Agent Studio"' "$devtools_json"; then
               break
             fi
             sleep 1
           done
 
-          grep -q '"title": "Tessera"' "$devtools_json"
+          grep -q '"title": "Agent Studio"' "$devtools_json"
           app_url="$(node -e "const fs=require('fs'); const pages=JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); console.log(pages[0]?.url || '')" "$devtools_json")"
           echo "Loaded URL: $app_url"
           port="$(printf '%s\n' "$app_url" | sed -n 's#^http://localhost:\([0-9][0-9]*\)/.*#\1#p')"
@@ -294,10 +294,10 @@ jobs:
       - name: Upload desktop artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tessera-linux-x64
+          name: agent-studio-linux-x64
           path: |
-            release/Tessera-*.AppImage
-            release/Tessera-*-linux-amd64.deb
+            release/Agent-Studio-*.AppImage
+            release/Agent-Studio-*-linux-amd64.deb
             release/latest-linux.yml
           if-no-files-found: error
           retention-days: 1

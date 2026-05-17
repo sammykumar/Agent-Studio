@@ -104,7 +104,7 @@ async function main() {
   const env = {
     ...process.env,
     NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: token,
-    TESSERA_TELEMETRY_LOCAL: '1',
+    AGENT_STUDIO_TELEMETRY_LOCAL: '1',
   };
 
   console.log(`[telemetry-build] enabled using ${source} (token length=${token.length})`);

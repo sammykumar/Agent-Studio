@@ -55,7 +55,7 @@ export interface SessionCreateResult {
  * Result of session resume
  *
  * status: 'running'   — CLI process was spawned successfully, live session active
- * status: 'read_only' — CLI spawn failed; canonical Tessera history (if any) is returned for viewing
+ * status: 'read_only' — CLI spawn failed; canonical Agent Studio history (if any) is returned for viewing
  */
 export interface SessionResumeResult {
   sessionId: string;

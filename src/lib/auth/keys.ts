@@ -2,11 +2,11 @@ import { generateKeyPairSync } from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 import logger from '../logger';
-import { getTesseraDataPath, resolveConfiguredPath } from '../tessera-data-dir';
+import { getAgentStudioDataPath, resolveConfiguredPath } from '../agent-studio-data-dir';
 
 const AUTH_KEYS_DIR = process.env.AUTH_KEYS_DIR
   ? resolveConfiguredPath(process.env.AUTH_KEYS_DIR)
-  : getTesseraDataPath('auth');
+  : getAgentStudioDataPath('auth');
 export const PRIVATE_KEY_PATH = path.join(AUTH_KEYS_DIR, 'private.pem');
 export const PUBLIC_KEY_PATH = path.join(AUTH_KEYS_DIR, 'public.pem');
 

@@ -14,7 +14,7 @@ import * as net from 'net';
 import * as path from 'path';
 import * as fs from 'fs';
 import { createTray, destroyTray, updateTrayCloseBehavior } from './tray';
-import { getTesseraDataPath } from '../src/lib/tessera-data-dir';
+import { getAgentStudioDataPath } from '../src/lib/agent-studio-data-dir';
 
 type TitlebarMenuSection = 'file' | 'edit' | 'view' | 'window' | 'help';
 type TitlebarTheme = 'light' | 'dark';
@@ -42,7 +42,7 @@ const WINDOWS_TITLEBAR_DIMMED_THEME = {
     symbolColor: '#d7dde3',
   },
 } satisfies Record<TitlebarTheme, { color: string; symbolColor: string }>;
-const TESSERA_HOMEPAGE = 'https://github.com/horang-labs/tessera';
+const AGENT_STUDIO_HOMEPAGE = 'https://github.com/sammykumar/Agent-Studio';
 
 function getTitlebarOverlayOptions(theme: TitlebarTheme, options: TitlebarThemeOptions = {}) {
   const palette = options.dimmed ? WINDOWS_TITLEBAR_DIMMED_THEME[theme] : WINDOWS_TITLEBAR_THEME[theme];
@@ -115,9 +115,9 @@ function buildTitlebarMenuTemplate(
     case 'help':
       return [
         {
-          label: 'Tessera on GitHub',
+          label: 'Agent Studio on GitHub',
           click: () => {
-            shell.openExternal(TESSERA_HOMEPAGE);
+            shell.openExternal(AGENT_STUDIO_HOMEPAGE);
           },
         },
       ];
@@ -165,7 +165,7 @@ function buildWebContentsContextMenuTemplate(
 }
 
 // ── Diagnostic log to file (visible on Windows) ─────────────────────────
-const LOG_PATH = getTesseraDataPath('tessera-main.log');
+const LOG_PATH = getAgentStudioDataPath('agent-studio-main.log');
 type ElectronLogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 const LOG_LEVEL_WEIGHT: Record<ElectronLogLevel, number> = {
   debug: 10,
@@ -185,7 +185,7 @@ function normalizeElectronLogLevel(value: string | undefined): ElectronLogLevel 
 }
 
 const ELECTRON_LOG_LEVEL =
-  normalizeElectronLogLevel(process.env.TESSERA_ELECTRON_LOG_LEVEL) ??
+  normalizeElectronLogLevel(process.env.AGENT_STUDIO_ELECTRON_LOG_LEVEL) ??
   normalizeElectronLogLevel(process.env.LOG_LEVEL) ??
   (app.isPackaged ? 'error' : 'debug');
 
@@ -247,6 +247,12 @@ function attachServerProcessLogging(child: ChildProcess) {
   });
 }
 
+// ── App identity ───────────────────────────────────────────────────────────
+// Set name before any app.getPath('userData') / single-instance-lock call so
+// Electron stores per-app data under ~/Library/Application Support/Agent Studio
+// (and the Linux/Windows equivalents) instead of inheriting from package.json.
+app.setName('Agent Studio');
+
 // ── Single instance lock ───────────────────────────────────────────────────
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
@@ -258,7 +264,7 @@ if (!gotLock) {
 // Electron enables GPU acceleration by default. Keep an escape hatch for
 // unstable virtual/driver environments without penalizing normal Windows use.
 // Must be called before app.whenReady().
-if (process.env.TESSERA_DISABLE_GPU === '1') {
+if (process.env.AGENT_STUDIO_DISABLE_GPU === '1') {
   app.disableHardwareAcceleration();
   app.commandLine.appendSwitch('disable-gpu');
   app.commandLine.appendSwitch('disable-gpu-compositing');
@@ -304,10 +310,10 @@ function requestAppQuit(): void {
 function getWindowsCloseAction(win: BrowserWindow): WindowCloseAction {
   const response = dialog.showMessageBoxSync(win, {
     type: 'question',
-    title: 'Tessera',
-    message: 'Close Tessera?',
+    title: 'Agent Studio',
+    message: 'Close Agent Studio?',
     detail: 'Quit the app completely, or keep it running in the system tray?',
-    buttons: ['Quit Tessera', 'Send to Tray', 'Cancel'],
+    buttons: ['Quit Agent Studio', 'Send to Tray', 'Cancel'],
     defaultId: 1,
     cancelId: 2,
     noLink: true,
@@ -422,7 +428,7 @@ async function findFreePort(): Promise<number> {
 
 // ── Server lifecycle ───────────────────────────────────────────────────────
 async function startServer(): Promise<number> {
-  const devPort = process.env.TESSERA_DEV_PORT;
+  const devPort = process.env.AGENT_STUDIO_DEV_PORT;
   if (devPort) {
     serverPort = parseInt(devPort, 10);
     return serverPort;
@@ -445,11 +451,11 @@ async function startServer(): Promise<number> {
       PORT: String(port),
       NODE_ENV: isPackaged ? 'production' : 'development',
       ELECTRON_CHILD: '1',
-      TESSERA_ELECTRON_SERVER: '1',
-      TESSERA_PRODUCTION_DB: '1',
-      TESSERA_ELECTRON_AUTH_BYPASS: '1',
-      TESSERA_APP_ROOT: appRoot,
-      TESSERA_CHANNEL: process.env.TESSERA_CHANNEL || (isPackaged ? 'github-release' : 'dev'),
+      AGENT_STUDIO_ELECTRON_SERVER: '1',
+      AGENT_STUDIO_PRODUCTION_DB: '1',
+      AGENT_STUDIO_ELECTRON_AUTH_BYPASS: '1',
+      AGENT_STUDIO_APP_ROOT: appRoot,
+      AGENT_STUDIO_CHANNEL: process.env.AGENT_STUDIO_CHANNEL || (isPackaged ? 'github-release' : 'dev'),
       // Makes the Electron exe behave as plain Node.js for fork()
       ELECTRON_RUN_AS_NODE: '1',
     };
@@ -489,7 +495,7 @@ async function startServer(): Promise<number> {
       serverProcess = null;
       if (!isQuitting) {
         dialog.showErrorBox(
-          'Tessera',
+          'Agent Studio',
           `Server exited unexpectedly (code ${code}). The application will now close.`
         );
         requestAppQuit();
@@ -541,7 +547,7 @@ function createWindow(port: number): BrowserWindow {
     height: 900,
     minWidth: 800,
     minHeight: 600,
-    title: 'Tessera',
+    title: 'Agent Studio',
     show: false,
     icon: path.join(__dirname, '..', 'assets', 'icon.png'),
     webPreferences: {
@@ -571,7 +577,7 @@ function createWindow(port: number): BrowserWindow {
   const showTimeout = setTimeout(() => {
     if (!win.isVisible()) {
       log('error', 'ready-to-show timeout; force-showing window');
-      console.error('[Tessera] ready-to-show timeout — force-showing window');
+      console.error('[Agent Studio] ready-to-show timeout — force-showing window');
       win.show();
       win.webContents.openDevTools();
     }
@@ -582,12 +588,12 @@ function createWindow(port: number): BrowserWindow {
   // Log renderer failures
   win.webContents.on('did-fail-load', (_e, code, desc) => {
     log('error', `Page load failed: ${code} ${desc} (${url})`);
-    console.error(`[Tessera] Page load failed: ${code} ${desc} (${url})`);
+    console.error(`[Agent Studio] Page load failed: ${code} ${desc} (${url})`);
   });
 
   win.webContents.on('render-process-gone', (_e, details) => {
     log('error', `Renderer crashed: ${details.reason}`);
-    console.error('[Tessera] Renderer crashed:', details.reason);
+    console.error('[Agent Studio] Renderer crashed:', details.reason);
   });
 
   // Open external links in system browser (only http/https for security)
@@ -610,7 +616,7 @@ function createWindow(port: number): BrowserWindow {
     });
   });
 
-  // Windows asks in the renderer so the prompt matches the Tessera UI and can
+  // Windows asks in the renderer so the prompt matches the Agent Studio UI and can
   // remember the chosen behavior. Other platforms preserve tray behavior.
   win.on('close', (event) => {
     if (isQuitting) return;
@@ -654,7 +660,7 @@ function createPopoutWindow(port: number, route: string): BrowserWindow {
     height: 800,
     minWidth: 600,
     minHeight: 400,
-    title: 'Tessera Board',
+    title: 'Agent Studio Board',
     show: false,
     icon: path.join(__dirname, '..', 'assets', 'icon.png'),
     webPreferences: {
@@ -839,7 +845,7 @@ app.whenReady().then(async () => {
       onCloseBehaviorChange: handleTrayCloseBehaviorChange,
     });
   } catch (err) {
-    dialog.showErrorBox('Tessera', `Failed to start server: ${err}`);
+    dialog.showErrorBox('Agent Studio', `Failed to start server: ${err}`);
     requestAppQuit();
   }
 });

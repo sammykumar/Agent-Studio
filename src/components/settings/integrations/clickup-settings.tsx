@@ -33,7 +33,7 @@ export default function ClickUpSettings() {
   const projectOptions = useMemo(
     () =>
       projects.map((p) => ({
-        // API routes key on `decodedPath` (e.g. /Users/.../tessera) — see
+        // API routes key on `decodedPath` (e.g. /Users/.../agent-studio) — see
         // /api/projects/[projectId]/integrations/clickup.
         value: p.decodedPath,
         label: p.displayName,
@@ -333,8 +333,8 @@ export default function ClickUpSettings() {
       <header className="space-y-1">
         <h3 className="font-medium text-(--text-primary)">ClickUp</h3>
         <p className="text-xs text-(--text-tertiary)">
-          Link a Tessera project to a ClickUp List. Status changes sync both ways;
-          everything else flows ClickUp → Tessera.
+          Link a Agent Studio project to a ClickUp List. Status changes sync both ways;
+          everything else flows ClickUp → Agent Studio.
         </p>
       </header>
 
@@ -400,7 +400,7 @@ export default function ClickUpSettings() {
           ) : (
             <div className="space-y-3">
               <SelectField
-                label="Tessera project"
+                label="Agent Studio project"
                 value={projectId ?? ''}
                 onChange={(v) => {
                   setProjectId(v || null);
@@ -462,7 +462,7 @@ export default function ClickUpSettings() {
                   htmlFor="clickup-sync-enabled"
                   className="text-xs text-(--text-secondary)"
                 >
-                  Push Tessera status changes back to ClickUp
+                  Push Agent Studio status changes back to ClickUp
                 </label>
               </div>
 

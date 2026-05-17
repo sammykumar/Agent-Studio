@@ -1275,7 +1275,7 @@ export class ClaudeCodeProtocolParser {
 // Singleton
 // =============================================================================
 
-const PARSER_KEY = Symbol.for('tessera.claudeCodeProtocolParser');
+const PARSER_KEY = Symbol.for('agent-studio.claudeCodeProtocolParser');
 const _g = globalThis as unknown as Record<symbol, ClaudeCodeProtocolParser>;
 export const claudeCodeProtocolParser: ClaudeCodeProtocolParser =
   _g[PARSER_KEY] || (_g[PARSER_KEY] = new ClaudeCodeProtocolParser());

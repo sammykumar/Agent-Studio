@@ -5,9 +5,9 @@
  * query code (sessions.ts, projects.ts, etc.) works without changes.
  *
  * Database file:
- *   - production runtime: ${TESSERA_DATA_DIR:-~/.tessera}/tessera.db
- *   - development on main branch: ${TESSERA_DATA_DIR:-~/.tessera}/tessera.db
- *   - development on every other branch: ${TESSERA_DATA_DIR:-~/.tessera}/tessera-dev.db
+ *   - production runtime: ${AGENT_STUDIO_DATA_DIR:-~/.agent-studio}/agent-studio.db
+ *   - development on main branch: ${AGENT_STUDIO_DATA_DIR:-~/.agent-studio}/agent-studio.db
+ *   - development on every other branch: ${AGENT_STUDIO_DATA_DIR:-~/.agent-studio}/agent-studio-dev.db
  * Persistence: immediate write-through on every mutation.
  */
 
@@ -142,7 +142,7 @@ class DatabaseWrapper {
 
 // ── Singleton ───────────────────────────────────────────────────────────────
 
-const DB_KEY = Symbol.for('tessera.database');
+const DB_KEY = Symbol.for('agent-studio.database');
 const _g = globalThis as unknown as Record<symbol, DatabaseWrapper>;
 
 /**
@@ -977,7 +977,7 @@ function runMigrations(db: DatabaseWrapper, fromVersion: number): void {
 
   if (fromVersion < 27) {
     // The v26 unique index keyed on (external_source, external_id) which
-    // prevented the same ClickUp task from existing in two Tessera projects.
+    // prevented the same ClickUp task from existing in two Agent Studio projects.
     // Re-scope by project_id so each project keeps its own copy.
     db.exec(`
       DROP INDEX IF EXISTS idx_tasks_external;

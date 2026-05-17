@@ -29,7 +29,7 @@ export interface TaskEntity {
   workflowStatus: WorkflowStatus;
   worktreeBranch?: string;
   workDir?: string;        // Working directory (from first session's work_dir)
-  /** True when Tessera recorded this worktree as app-managed. */
+  /** True when Agent Studio recorded this worktree as app-managed. */
   worktreeManaged?: boolean;
   archived?: boolean;
   archivedAt?: string;

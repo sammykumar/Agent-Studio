@@ -137,8 +137,8 @@ export interface UnifiedSession {
   lastModified: string;
   /** Created timestamp */
   createdAt: string;
-  /** Tessera internal session ID (for active sessions managed by ProcessManager) */
-  tesseraSessionId?: string;
+  /** Agent Studio internal session ID (for active sessions managed by ProcessManager) */
+  agentStudioSessionId?: string;
   /** Whether messages are loaded in read-only mode (no CLI process) */
   isReadOnly?: boolean;
   /** Unread notification count (incremented on notification, cleared on view) */
@@ -208,11 +208,11 @@ export interface UnifiedSession {
 
 /** Represents a project directory containing sessions */
 export interface ProjectGroup {
-  /** Encoded directory name (e.g., "-path-to-tessera") */
+  /** Encoded directory name (e.g., "-path-to-agent-studio") */
   encodedDir: string;
-  /** Display name -- folder name only (e.g., "tessera") */
+  /** Display name -- folder name only (e.g., "agent-studio") */
   displayName: string;
-  /** Decoded filesystem path (e.g., "/path/to/tessera") */
+  /** Decoded filesystem path (e.g., "/path/to/agent-studio") */
   decodedPath: string;
   /** Human-readable path formatted for the active agent environment. */
   displayPath?: string;

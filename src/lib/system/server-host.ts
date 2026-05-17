@@ -28,20 +28,20 @@ export function getServerHostInfo(options: GetServerHostInfoOptions = {}): Serve
 }
 
 function resolveInstallChannel(env: NodeJS.ProcessEnv): string {
-  const explicit = env.TESSERA_CHANNEL?.trim();
+  const explicit = env.AGENT_STUDIO_CHANNEL?.trim();
   if (explicit) return explicit;
-  if (env.TESSERA_ELECTRON_SERVER === '1') return env.NODE_ENV === 'development' ? 'dev' : 'github-release';
-  if (env.TESSERA_CLI === '1') return 'npm';
+  if (env.AGENT_STUDIO_ELECTRON_SERVER === '1') return env.NODE_ENV === 'development' ? 'dev' : 'github-release';
+  if (env.AGENT_STUDIO_CLI === '1') return 'npm';
   if (env.NODE_ENV === 'development') return 'dev';
   return 'unknown';
 }
 
 function isTelemetryDisabledByEnv(env: NodeJS.ProcessEnv, channel: string): boolean {
-  if (env.TESSERA_TELEMETRY_DISABLED === '1' || env.DO_NOT_TRACK === '1') {
+  if (env.AGENT_STUDIO_TELEMETRY_DISABLED === '1' || env.DO_NOT_TRACK === '1') {
     return true;
   }
 
-  if ((channel === 'dev' || channel === 'unknown') && env.TESSERA_TELEMETRY_LOCAL !== '1') {
+  if ((channel === 'dev' || channel === 'unknown') && env.AGENT_STUDIO_TELEMETRY_LOCAL !== '1') {
     return true;
   }
 

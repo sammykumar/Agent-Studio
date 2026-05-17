@@ -15,8 +15,8 @@ import logger from '@/lib/logger';
 /**
  * GET /api/sessions/projects
  *
- * Returns registered projects with their sessions from Tessera's own DB.
- * Only projects imported through Tessera appear.
+ * Returns registered projects with their sessions from Agent Studio's own DB.
+ * Only projects imported through Agent Studio appear.
  * Sessions are limited per project (default: 5).
  * Projects are sorted: current project first, then alphabetically.
  */
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     const shouldRegisterCurrentProject = shouldAutoRegisterCurrentProject(currentProjectId);
 
     // Ensure the currently running workspace always appears in the project list.
-    // This matters for sibling worktrees because the Tessera DB is shared across
+    // This matters for sibling worktrees because the Agent Studio DB is shared across
     // worktrees, but a fresh worktree may not be registered yet. Packaged
     // Electron runs the server from the app resources directory, which is not a
     // user project and must not be auto-imported.

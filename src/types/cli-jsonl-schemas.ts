@@ -302,7 +302,7 @@ export interface UserMessage extends BaseJsonlEnvelope {
    * 3. 로컬 커맨드 caveat — /config 등 실행 시 경고
    * 4. 태스크 에이전트 지시사항
    *
-   * Tessera에서는 채팅 버블로 표시하지 않거나 접이식 처리.
+   * Agent Studio에서는 채팅 버블로 표시하지 않거나 접이식 처리.
    */
   isMeta?: boolean;
 

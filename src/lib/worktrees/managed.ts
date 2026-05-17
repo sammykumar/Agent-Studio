@@ -8,7 +8,7 @@ import {
   normalizeManagedWorktreeSlug,
 } from './naming';
 import { resolveManagedWorktreePathTemplate } from './path-template-server';
-import { getTesseraDataPath } from '../tessera-data-dir';
+import { getAgentStudioDataPath } from '../agent-studio-data-dir';
 import {
   getWslHostedWindowsHomeMountPath,
   getWindowsHostedWslRootFilesystemPath,
@@ -19,7 +19,7 @@ import { createGitRunner, type GitRunner } from './git-runner';
 import { getRuntimePlatform } from '../system/runtime-platform';
 import { isRunningInWsl } from '../cli/cli-exec';
 
-export const MANAGED_WORKTREE_ROOT = getTesseraDataPath('worktrees');
+export const MANAGED_WORKTREE_ROOT = getAgentStudioDataPath('worktrees');
 
 interface ManagedWorktreeAllocation {
   branchName: string;
@@ -142,7 +142,7 @@ export async function resolveManagedWorktreeRoot(
   }
 
   if (getRuntimePlatform() === 'linux' && isRunningInWsl()) {
-    return path.posix.join(await getWslHostedWindowsHomeMountPath(), '.tessera', 'worktrees');
+    return path.posix.join(await getWslHostedWindowsHomeMountPath(), '.agent-studio', 'worktrees');
   }
 
   return MANAGED_WORKTREE_ROOT;
@@ -217,21 +217,21 @@ function resolveWslHomeManagedWorktreeRoot(candidate: string): string | null {
   const match = normalized.match(/^(\\\\(?:wsl\.localhost|wsl\$)\\[^\\]+)\\home\\([^\\]+)(?:\\|$)/i);
   if (!match) return null;
 
-  return path.win32.join(match[1], 'home', match[2], '.tessera', 'worktrees');
+  return path.win32.join(match[1], 'home', match[2], '.agent-studio', 'worktrees');
 }
 
 function resolveWslFallbackManagedWorktreeRoot(candidate: string): string | null {
   const rootFilesystemPath = getWindowsHostedWslRootFilesystemPath(candidate);
   if (!rootFilesystemPath) return null;
 
-  return path.win32.join(rootFilesystemPath, 'var', 'tmp', 'tessera-worktrees');
+  return path.win32.join(rootFilesystemPath, 'var', 'tmp', 'agent-studio-worktrees');
 }
 
 function resolveWslHostedNativeManagedWorktreeRoot(candidate: string): string | null {
   const normalized = candidate.replace(/\\/g, '/');
-  const match = normalized.match(/^(\/mnt\/[a-zA-Z]\/Users\/[^/]+)\/\.tessera\/worktrees(?:\/|$)/);
+  const match = normalized.match(/^(\/mnt\/[a-zA-Z]\/Users\/[^/]+)\/\.agent-studio\/worktrees(?:\/|$)/);
   if (!match) return null;
-  return path.posix.join(match[1], '.tessera', 'worktrees');
+  return path.posix.join(match[1], '.agent-studio', 'worktrees');
 }
 
 function inferManagedGitEnvironment(

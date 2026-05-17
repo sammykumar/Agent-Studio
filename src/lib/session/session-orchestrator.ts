@@ -204,7 +204,7 @@ export class SessionOrchestrator {
 import { processManager } from '../cli/process-manager';
 
 // globalThis to survive Next.js hot reload and webpack/tsx module boundary
-const SO_KEY = Symbol.for('tessera.sessionOrchestrator');
+const SO_KEY = Symbol.for('agent-studio.sessionOrchestrator');
 const _g = globalThis as unknown as Record<symbol, SessionOrchestrator>;
 export const sessionOrchestrator: SessionOrchestrator =
   _g[SO_KEY] || (_g[SO_KEY] = new SessionOrchestrator(processManager));

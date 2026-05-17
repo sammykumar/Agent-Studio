@@ -14,8 +14,8 @@ const moduleAny = Module as typeof Module & {
 
 const originalResolveFilename = moduleAny._resolveFilename;
 
-if (originalResolveFilename && !(globalThis as { __tesseraAliasRegistered?: boolean }).__tesseraAliasRegistered) {
-  (globalThis as { __tesseraAliasRegistered?: boolean }).__tesseraAliasRegistered = true;
+if (originalResolveFilename && !(globalThis as { __agentStudioAliasRegistered?: boolean }).__agentStudioAliasRegistered) {
+  (globalThis as { __agentStudioAliasRegistered?: boolean }).__agentStudioAliasRegistered = true;
 
   moduleAny._resolveFilename = function patchedResolveFilename(
     request: string,

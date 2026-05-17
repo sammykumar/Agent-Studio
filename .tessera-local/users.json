@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "id": "9038b822-be89-4308-8e6b-321e7c21c9fe",
+      "username": "admin",
+      "passwordHash": "$2b$10$k4Ko3kIVQTuX058sLszckOJuZw9dD3tHM/85APDRxWBipumLNYv1e",
+      "createdAt": "2026-05-16T19:34:36.087Z",
+      "lastLoginAt": "2026-05-16T19:37:05.041Z"
+    }
+  ]
+}

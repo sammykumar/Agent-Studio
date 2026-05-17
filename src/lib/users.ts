@@ -3,11 +3,11 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { User, UserJSON, UsersFile } from '@/types/auth';
 import { hashPassword } from './auth/password';
-import { getTesseraDataPath, resolveConfiguredPath } from './tessera-data-dir';
+import { getAgentStudioDataPath, resolveConfiguredPath } from './agent-studio-data-dir';
 
 const USERS_FILE_PATH = process.env.USERS_FILE_PATH
   ? resolveConfiguredPath(process.env.USERS_FILE_PATH)
-  : getTesseraDataPath('users.json');
+  : getAgentStudioDataPath('users.json');
 
 let usersCacheData: UsersFile | null = null;
 let usersCacheExpiry = 0;

@@ -58,14 +58,14 @@ import {
 import { updateProviderStateWithRetry } from '../../process-manager-side-effects';
 import { getRuntimePlatform } from '@/lib/system/runtime-platform';
 import logger from '@/lib/logger';
-import { getTesseraDataPath } from '@/lib/tessera-data-dir';
+import { getAgentStudioDataPath } from '@/lib/agent-studio-data-dir';
 
 const CLI_TIMEOUT_MS = 120_000;
 const STATUS_CHECK_TIMEOUT_MS = 5_000;
 const TITLE_REASONING_EFFORT = 'low';
 const PROVIDER_ID = 'codex';
 const DEFAULT_COMMAND = 'codex';
-const CODEX_ATTACHMENTS_DIR = getTesseraDataPath('attachments', 'codex');
+const CODEX_ATTACHMENTS_DIR = getAgentStudioDataPath('attachments', 'codex');
 
 type CodexInputItem =
   | { type: 'text'; text: string }
@@ -432,7 +432,7 @@ export class CodexAdapter implements CliProvider {
    * handshake. When content is an array of ContentBlock:
    *   - text blocks  → { type: 'text', text: '...' }
    *   - skill blocks → { type: 'skill', name: '...', path: '...' }
-   *   - image blocks → persisted to ~/.tessera/attachments/codex/{sessionId}
+   *   - image blocks → persisted to ~/.agent-studio/attachments/codex/{sessionId}
    *                    and sent as { type: 'localImage', path: '...' }
    *
    * When content is a plain string it is wrapped in a single text item.
@@ -536,7 +536,7 @@ export class CodexAdapter implements CliProvider {
   }
 
   /**
-   * Parses a stdout line using the real Tessera session ID so Codex parser state
+   * Parses a stdout line using the real Agent Studio session ID so Codex parser state
    * stays fully encapsulated inside the provider boundary.
    */
   parseSessionStdout(sessionId: string, line: string): ParsedMessage[] {
@@ -829,7 +829,7 @@ export class CodexAdapter implements CliProvider {
       method: 'initialize',
       params: {
         protocolVersion: '2025-01-01',
-        clientInfo: { name: 'tessera', version: '1.0.0' },
+        clientInfo: { name: 'agent-studio', version: '1.0.0' },
         capabilities: { experimentalApi: true },
       },
     };

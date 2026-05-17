@@ -20,7 +20,7 @@ async function pathExists(filePath) {
 async function findAppBundle(appOutDir, productFilename) {
   const candidates = [
     productFilename ? path.join(appOutDir, `${productFilename}.app`) : null,
-    path.join(appOutDir, 'Tessera.app'),
+    path.join(appOutDir, 'Agent Studio.app'),
   ].filter(Boolean);
 
   for (const candidate of candidates) {
@@ -72,7 +72,7 @@ async function assertLibraryValidationDisabled(appBundlePath) {
 module.exports = async function afterPack(context) {
   if (context.electronPlatformName !== 'darwin') return;
 
-  if (process.env.TESSERA_MAC_DISTRIBUTION === '1') {
+  if (process.env.AGENT_STUDIO_MAC_DISTRIBUTION === '1') {
     console.log('[electron-after-pack] skipping ad-hoc signing for Developer ID distribution build');
     return;
   }

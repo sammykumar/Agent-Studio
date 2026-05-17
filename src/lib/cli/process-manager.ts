@@ -800,6 +800,6 @@ export class ProcessManager {
 }
 
 // Singleton instance (globalThis to survive Next.js hot reload and webpack/tsx module boundary)
-const PM_KEY = Symbol.for('tessera.processManager');
+const PM_KEY = Symbol.for('agent-studio.processManager');
 const _g = globalThis as unknown as Record<symbol, ProcessManager>;
 export const processManager: ProcessManager = _g[PM_KEY] || (_g[PM_KEY] = new ProcessManager());

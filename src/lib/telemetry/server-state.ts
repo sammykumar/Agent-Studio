@@ -4,7 +4,7 @@ import fsp from 'fs/promises';
 import path from 'path';
 import { getServerHostInfo } from '@/lib/system/server-host';
 import type { ServerHostInfo } from '@/lib/system/types';
-import { getTesseraDataDir, getTesseraDataPath } from '@/lib/tessera-data-dir';
+import { getAgentStudioDataDir, getAgentStudioDataPath } from '@/lib/agent-studio-data-dir';
 
 export interface TelemetryInstallState {
   installId: string;
@@ -27,8 +27,8 @@ const EXISTING_INSTALL_MARKERS = [
   'session-exports',
   'attachments',
   'worktrees',
-  'tessera.db',
-  'tessera-dev.db',
+  'agent-studio.db',
+  'agent-studio-dev.db',
 ] as const;
 
 let startupHadExistingInstallData: boolean | null = null;
@@ -135,11 +135,11 @@ async function writeTelemetryInstallState(state: TelemetryInstallState): Promise
 }
 
 function getTelemetryStatePath(): string {
-  return getTesseraDataPath(TELEMETRY_STATE_FILE);
+  return getAgentStudioDataPath(TELEMETRY_STATE_FILE);
 }
 
 function hasExistingInstallData(): boolean {
-  const dataDir = getTesseraDataDir();
+  const dataDir = getAgentStudioDataDir();
   for (const marker of EXISTING_INSTALL_MARKERS) {
     if (fs.existsSync(path.join(dataDir, marker))) {
       return true;

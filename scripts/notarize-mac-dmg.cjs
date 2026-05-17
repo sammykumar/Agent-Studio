@@ -2,10 +2,10 @@ const fs = require('fs/promises');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const releaseDir = path.resolve(process.env.TESSERA_RELEASE_DIR || 'release');
+const releaseDir = path.resolve(process.env.AGENT_STUDIO_RELEASE_DIR || 'release');
 const requestedArchs = new Set(process.argv.slice(2));
-const notaryTimeout = process.env.TESSERA_NOTARY_TIMEOUT || '45m';
-const disableS3Acceleration = process.env.TESSERA_NOTARY_DISABLE_S3_ACCELERATION !== '0';
+const notaryTimeout = process.env.AGENT_STUDIO_NOTARY_TIMEOUT || '45m';
+const disableS3Acceleration = process.env.AGENT_STUDIO_NOTARY_DISABLE_S3_ACCELERATION !== '0';
 
 function isDmgForRequestedArch(filePath) {
   if (!filePath.endsWith('.dmg')) return false;

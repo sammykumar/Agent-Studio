@@ -173,7 +173,7 @@ export function ElectronTitlebar({ showMenu = true }: ElectronTitlebarProps) {
           T
         </div>
         <span className="text-[13px] font-semibold tracking-[-0.01em] truncate">
-          Tessera
+          Agent Studio
         </span>
       </div>
 

@@ -31,7 +31,7 @@ export interface SessionPrUpdate {
 
 type Listener = (update: SessionPrUpdate) => void;
 
-const GLOBAL_KEY = Symbol.for('tessera.sessionPrSync');
+const GLOBAL_KEY = Symbol.for('agent-studio.sessionPrSync');
 interface SyncState {
   cache: Map<string, SessionPrCacheEntry>;
   listeners: Set<Listener>;

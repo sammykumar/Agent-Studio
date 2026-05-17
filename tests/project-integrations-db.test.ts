@@ -4,11 +4,11 @@ import os from 'node:os';
 import path from 'node:path';
 import test, { before } from 'node:test';
 
-// Database singleton lives under a global symbol — set TESSERA_DATA_DIR before
+// Database singleton lives under a global symbol — set AGENT_STUDIO_DATA_DIR before
 // any import that may trigger DB initialization.
-const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'tessera-clickup-db-'));
-process.env.TESSERA_DATA_DIR = TMP;
-process.env.TESSERA_PRODUCTION_DB = '1';
+const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-studio-clickup-db-'));
+process.env.AGENT_STUDIO_DATA_DIR = TMP;
+process.env.AGENT_STUDIO_PRODUCTION_DB = '1';
 
 before(async () => {
   const { initDatabase } = await import('../src/lib/db/database');

@@ -7,8 +7,8 @@ import type { SpawnCliCache } from './spawn-cli-cache';
 
 type LoginShellEnvironment = Record<string, string>;
 
-const PATH_MARKER_START = '__TESSERA_PATH_START__';
-const PATH_MARKER_END = '__TESSERA_PATH_END__';
+const PATH_MARKER_START = '__AGENT_STUDIO_PATH_START__';
+const PATH_MARKER_END = '__AGENT_STUDIO_PATH_END__';
 const WSL_FALLBACK_LOGIN_SHELL = 'bash';
 const WSL_LOGIN_SHELL_PROBE_SCRIPT = [
   'user="$(id -un 2>/dev/null || printf %s "${USER:-}")"',

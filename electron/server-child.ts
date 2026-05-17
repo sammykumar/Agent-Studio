@@ -20,11 +20,11 @@ import { installSessionPrStatusBroadcast, uninstallSessionPrStatusBroadcast } fr
 import { prewarmCliStatusSnapshot } from '../src/lib/cli/provider-status-prewarm';
 import { snapshotTelemetryStartupDataState } from '../src/lib/telemetry/server-state';
 import logger from '../src/lib/logger';
-import { getTesseraDataPath } from '../src/lib/tessera-data-dir';
+import { getAgentStudioDataPath } from '../src/lib/agent-studio-data-dir';
 
 process.env.ELECTRON_CHILD = '1';
-process.env.TESSERA_ELECTRON_SERVER = '1';
-process.env.TESSERA_PRODUCTION_DB = '1';
+process.env.AGENT_STUDIO_ELECTRON_SERVER = '1';
+process.env.AGENT_STUDIO_PRODUCTION_DB = '1';
 snapshotTelemetryStartupDataState();
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -32,11 +32,11 @@ const hostname = '127.0.0.1';
 const port = parseInt(process.env.PORT || '3000', 10);
 // In packaged apps, cwd must be a real directory while Next should still resolve
 // assets from the packaged app root (typically resources/app.asar).
-const dir = process.env.TESSERA_APP_ROOT || process.cwd();
+const dir = process.env.AGENT_STUDIO_APP_ROOT || process.cwd();
 
 import * as fs from 'fs';
 import * as path from 'path';
-const STARTUP_LOG = getTesseraDataPath('startup.log');
+const STARTUP_LOG = getAgentStudioDataPath('startup.log');
 type StartupLogLevel = 'debug' | 'error' | 'fatal';
 const STARTUP_LOG_LEVEL_WEIGHT: Record<StartupLogLevel, number> = {
   debug: 10,
@@ -54,7 +54,7 @@ function normalizeStartupLogLevel(value: string | undefined): StartupLogLevel | 
 }
 
 const STARTUP_LOG_LEVEL =
-  normalizeStartupLogLevel(process.env.TESSERA_ELECTRON_LOG_LEVEL) ??
+  normalizeStartupLogLevel(process.env.AGENT_STUDIO_ELECTRON_LOG_LEVEL) ??
   normalizeStartupLogLevel(process.env.LOG_LEVEL) ??
   (process.env.NODE_ENV === 'production' ? 'error' : 'debug');
 

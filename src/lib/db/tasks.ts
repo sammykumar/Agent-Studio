@@ -288,12 +288,12 @@ export function createTask(params: {
  * Insert-or-update a task linked to an external system (e.g. ClickUp).
  *
  * On insert: generates a new task_id, places the task at the bottom of the
- * project's sort order, and leaves Tessera-specific fields (collection,
+ * project's sort order, and leaves Agent Studio-specific fields (collection,
  * worktree, summary, PR state) NULL.
  *
  * On update: only patches `title`, `workflow_status`, and the `external_*`
  * columns. Worktree/summary/sort/collection/PR state stay untouched so a sync
- * never clobbers local Tessera state for a linked task.
+ * never clobbers local Agent Studio state for a linked task.
  */
 export function upsertExternalTask(input: {
   projectId: string;
@@ -369,7 +369,7 @@ export function upsertExternalTask(input: {
  * Archive every task linked to `externalSource` whose external_id is not in
  * `presentExternalIds`. Used after a successful pull so tasks that vanished
  * from the remote list are removed from the active board without losing local
- * Tessera state (worktree, PR history, etc.). Returns archived task IDs.
+ * Agent Studio state (worktree, PR history, etc.). Returns archived task IDs.
  */
 export function archiveTasksMissingFromExternal(
   projectId: string,

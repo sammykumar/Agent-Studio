@@ -1,12 +1,12 @@
 import { execFile } from 'child_process';
 import path from 'path';
 import { promisify } from 'util';
-import { getTesseraDataDir } from '../tessera-data-dir';
+import { getAgentStudioDataDir } from '../agent-studio-data-dir';
 
 const execFileAsync = promisify(execFile);
 
-export const DEFAULT_DB_NAME = 'tessera';
-export const DEV_BRANCH_DB_NAME = 'tessera-dev';
+export const DEFAULT_DB_NAME = 'agent-studio';
+export const DEV_BRANCH_DB_NAME = 'agent-studio-dev';
 export const PRD_BRANCH_NAME = 'main';
 
 export interface DatabaseLocation {
@@ -37,13 +37,13 @@ export async function detectCurrentGitBranch(cwd: string = process.cwd()): Promi
 export async function resolveDatabaseLocation(
   options: ResolveDatabaseLocationOptions = {}
 ): Promise<DatabaseLocation> {
-  const dbDir = options.dbDir ?? getTesseraDataDir();
+  const dbDir = options.dbDir ?? getAgentStudioDataDir();
   const isProductionRuntime = options.isProductionRuntime ?? (
-    process.env.TESSERA_PRODUCTION_DB === '1' ||
+    process.env.AGENT_STUDIO_PRODUCTION_DB === '1' ||
     process.env.NODE_ENV === 'production' ||
-    process.env.TESSERA_CLI === '1' ||
+    process.env.AGENT_STUDIO_CLI === '1' ||
     process.env.ELECTRON_CHILD === '1' ||
-    process.env.TESSERA_ELECTRON_SERVER === '1'
+    process.env.AGENT_STUDIO_ELECTRON_SERVER === '1'
   );
 
   if (isProductionRuntime) {

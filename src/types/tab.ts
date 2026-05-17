@@ -3,7 +3,7 @@ import type { Panel, PanelNode } from '@/types/panel';
 // --- 상수 ---
 
 /** localStorage 키 — 탭 스토어 직렬화 데이터 */
-export const TAB_STORE_KEY = 'tessera-tab-store' as const;
+export const TAB_STORE_KEY = 'agent-studio-tab-store' as const;
 
 /** LRU 마운트 윈도우 최대 크기. 이 수 이상의 PanelContainer는 DOM에 존재하지 않음. */
 export const LRU_LIMIT = 5;

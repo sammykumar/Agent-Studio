@@ -3,8 +3,8 @@ import type { ServerHostInfo } from '@/lib/system/types';
 import type { UpdateCheckResponse, UpdateSource } from './types';
 import { isNewerVersion, pickLatestVersion } from './version';
 
-const PACKAGE_NAME = '@horang-labs/tessera';
-const GITHUB_REPO = 'horang-labs/tessera';
+const PACKAGE_NAME = '@sk-productions/agent-studio';
+const GITHUB_REPO = 'sammykumar/Agent-Studio';
 const CHECK_TIMEOUT_MS = 10_000;
 
 interface NpmRegistryResponse {
@@ -85,7 +85,7 @@ async function fetchJson<T>(url: string, fetchImpl: typeof fetch): Promise<T> {
       cache: 'no-store',
       headers: {
         Accept: 'application/json',
-        'User-Agent': 'Tessera update checker',
+        'User-Agent': 'Agent Studio update checker',
       },
       signal: controller.signal,
     });

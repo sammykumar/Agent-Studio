@@ -289,7 +289,7 @@ export class ClaudeCodeAdapter implements CliProvider {
   }
 
   /**
-   * Parses a stdout line using the real Tessera session ID so Claude parser state
+   * Parses a stdout line using the real Agent Studio session ID so Claude parser state
    * stays inside the provider boundary instead of the legacy protocol adapter.
    */
   parseSessionStdout(sessionId: string, line: string): ParsedMessage[] {
