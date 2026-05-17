@@ -52,7 +52,7 @@
   ],
   "scripts": {
     "dev": "d3k --port 5001 --script dev:local --startup-timeout 90 --headless --no-agent --no-tui",
-    "dev:local": "cross-env NODE_ENV=development tsx server.ts",
+    "dev:local": "cross-env NODE_ENV=development AGENT_STUDIO_HOST=0.0.0.0 tsx server.ts",
     "dev:d3k": "d3k --port 5001 --startup-timeout 90 --headless --with-agent claude",
     "build": "cross-env TURBOPACK= __NEXT_DEV_SERVER= __NEXT_PROCESSED_ENV= NODE_ENV=production next build --webpack",
     "build:telemetry": "node scripts/with-posthog-telemetry-build.mjs npm run build",
