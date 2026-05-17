@@ -321,8 +321,12 @@ export const KanbanBoard = memo(function KanbanBoard() {
 
   const filteredTasks = useMemo(() => {
     const visibleTaskSessionIds = new Set(visibleTaskSessions.map((s) => s.id));
-    const baseTasks = tasks.filter((task) =>
-      task.sessions.some((session) => visibleTaskSessionIds.has(session.id))
+    const baseTasks = tasks.filter(
+      (task) =>
+        task.sessions.some((session) => visibleTaskSessionIds.has(session.id))
+        // Externally-imported tasks (ClickUp etc.) start with no Agent Studio
+        // session attached. Show them anyway so the user can act on them.
+        || Boolean(task.external),
     );
     if (!activeCollectionFilter) return baseTasks;
     return baseTasks.filter((t) => t.collectionId === activeCollectionFilter);
