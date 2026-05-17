@@ -52,6 +52,7 @@ export interface I18nMessages {
       medium: string;
       large: string;
       xlarge: string;
+      custom: string;
     };
     inactivePanelDimming: string;
     showProviderIcons: string;

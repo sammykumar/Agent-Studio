@@ -22,17 +22,10 @@ const themeScript = `
     var theme = settings.theme || 'auto';
     var isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     if (isDark) document.documentElement.classList.add('dark');
-    var scales = [0.8125, 0.875, 0.9375, 1];
-    var raw = typeof settings.fontSize === 'number' ? settings.fontSize : 0.875;
-    var scale = 0.875;
-    if (raw < 2) {
-      var best = scales[0];
-      var bestDelta = Math.abs(raw - best);
-      for (var i = 0; i < scales.length; i++) {
-        var d = Math.abs(raw - scales[i]);
-        if (d < bestDelta) { best = scales[i]; bestDelta = d; }
-      }
-      scale = best;
+    var raw = typeof settings.fontSize === 'number' ? settings.fontSize : 1;
+    var scale = 1;
+    if (isFinite(raw) && raw < 2) {
+      scale = Math.max(0.5, raw);
     }
     document.documentElement.style.setProperty('--font-scale', String(scale));
   } catch(e) {}

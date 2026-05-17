@@ -54,6 +54,7 @@ export const ko: I18nMessages = {
       medium: '보통',
       large: '크게',
       xlarge: '아주 크게',
+      custom: '사용자 지정',
     },
     inactivePanelDimming: '비활성 패널 흐리기',
     showProviderIcons: '프로바이더 아이콘 표시',

@@ -54,6 +54,7 @@ export const en: I18nMessages = {
       medium: 'Medium',
       large: 'Large',
       xlarge: 'Extra Large',
+      custom: 'Custom',
     },
     inactivePanelDimming: 'Inactive Panel Dimming',
     showProviderIcons: 'Show provider icons',

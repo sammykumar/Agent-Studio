@@ -28,7 +28,9 @@ import {
 } from './profile-defaults';
 
 export const FONT_SCALE_OPTIONS = [0.8125, 0.875, 0.9375, 1] as const;
-export const DEFAULT_FONT_SCALE = 0.875;
+export const DEFAULT_FONT_SCALE = 1;
+export const MIN_FONT_SCALE = 0.5; // 8px
+export const MAX_FONT_SCALE = 2; // exclusive — values >= 2 are treated as legacy px and reset to default
 type ClaudeAccessMode = Extract<
   ProviderSessionAccessMode,
   'default' | 'acceptEdits' | 'dontAsk' | 'bypassPermissions'
@@ -43,27 +45,18 @@ type OpenCodeAccessMode = Extract<
 >;
 
 /**
- * Normalize fontSize to one of FONT_SCALE_OPTIONS. Legacy px values (12-20)
- * from prior versions collapse to 1 since the old setting never actually took
- * effect — users experienced the default size regardless of the stored number.
+ * Normalize fontSize to a scale in [MIN_FONT_SCALE, MAX_FONT_SCALE). Legacy px
+ * values (12-20) from prior versions collapse to the default since the old
+ * setting never actually took effect.
  */
 export function normalizeFontScale(raw: unknown): number {
   if (typeof raw !== 'number' || !Number.isFinite(raw)) {
     return DEFAULT_FONT_SCALE;
   }
-  if (raw >= 2) {
+  if (raw >= MAX_FONT_SCALE) {
     return DEFAULT_FONT_SCALE;
   }
-  let best: number = FONT_SCALE_OPTIONS[0];
-  let bestDelta = Math.abs(raw - best);
-  for (const option of FONT_SCALE_OPTIONS) {
-    const delta = Math.abs(raw - option);
-    if (delta < bestDelta) {
-      best = option;
-      bestDelta = delta;
-    }
-  }
-  return best;
+  return Math.max(MIN_FONT_SCALE, raw);
 }
 
 export const DEFAULT_GLOBAL_GIT_GUIDELINES = '';
@@ -528,7 +521,7 @@ export function normalizeUserSettings(raw: Partial<UserSettings> | null | undefi
     },
     integrations: {
       clickup: {
-        personalToken: '',
+        accessToken: '',
       },
     },
     version: '1.0.0',
@@ -625,8 +618,8 @@ function normalizeIntegrations(
   defaults: IntegrationsUserSettings,
 ): IntegrationsUserSettings {
   const rawClickUp = raw?.clickup;
-  const personalToken =
-    typeof rawClickUp?.personalToken === 'string' ? rawClickUp.personalToken.trim() : '';
+  const accessToken =
+    typeof rawClickUp?.accessToken === 'string' ? rawClickUp.accessToken.trim() : '';
   const username =
     typeof rawClickUp?.username === 'string' && rawClickUp.username.trim().length > 0
       ? rawClickUp.username.trim()
@@ -638,7 +631,7 @@ function normalizeIntegrations(
   return {
     clickup: {
       ...defaults.clickup,
-      personalToken,
+      accessToken,
       ...(username !== undefined ? { username } : {}),
       ...(workspaceId !== undefined ? { workspaceId } : {}),
     },

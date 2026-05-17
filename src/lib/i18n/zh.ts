@@ -54,6 +54,7 @@ export const zh: I18nMessages = {
       medium: '中',
       large: '大',
       xlarge: '超大',
+      custom: '自定义',
     },
     inactivePanelDimming: '非活跃面板变暗',
     showProviderIcons: '显示提供者图标',

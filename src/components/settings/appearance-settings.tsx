@@ -1,14 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useI18n } from '@/lib/i18n';
 import {
-  DEFAULT_FONT_SCALE,
   FONT_SCALE_OPTIONS,
+  MIN_FONT_SCALE,
+  MAX_FONT_SCALE,
   normalizeFontScale,
 } from '@/lib/settings/provider-defaults';
 
 const PRESET_LABEL_KEYS = ['small', 'medium', 'large', 'xlarge'] as const;
+const PRESET_EPSILON = 0.0001;
+const MIN_CUSTOM_PX = Math.ceil(MIN_FONT_SCALE * 16);
+const MAX_CUSTOM_PX = Math.floor((MAX_FONT_SCALE - PRESET_EPSILON) * 16);
 
 export default function AppearanceSettings() {
   const { t } = useI18n();
@@ -21,12 +26,30 @@ export default function AppearanceSettings() {
   // Theme and font scale are applied globally by ThemeInitializer.
 
   const currentScale = normalizeFontScale(fontSize);
-  const currentIndex = Math.max(
-    0,
-    FONT_SCALE_OPTIONS.findIndex((s) => s === currentScale),
+  const currentPx = Math.round(currentScale * 16);
+  const presetIndex = FONT_SCALE_OPTIONS.findIndex(
+    (s) => Math.abs(s - currentScale) < PRESET_EPSILON,
   );
-  const activeIndex = currentIndex === -1 ? FONT_SCALE_OPTIONS.indexOf(DEFAULT_FONT_SCALE) : currentIndex;
-  const activeLabel = t(`settings.fontSizePresets.${PRESET_LABEL_KEYS[activeIndex]}`);
+  const isOnPreset = presetIndex !== -1;
+  const [customMode, setCustomMode] = useState(!isOnPreset);
+  const showCustom = customMode || !isOnPreset;
+  const selectValue = showCustom ? 'custom' : String(presetIndex);
+
+  const handleFontSelect = (value: string) => {
+    if (value === 'custom') {
+      setCustomMode(true);
+      return;
+    }
+    setCustomMode(false);
+    updateSettings({ fontSize: FONT_SCALE_OPTIONS[parseInt(value, 10)] });
+  };
+
+  const handleCustomPx = (raw: string) => {
+    const px = parseInt(raw, 10);
+    if (!Number.isFinite(px)) return;
+    const clamped = Math.min(Math.max(px, MIN_CUSTOM_PX), MAX_CUSTOM_PX);
+    updateSettings({ fontSize: clamped / 16 });
+  };
 
   return (
     <div className="space-y-4">
@@ -46,23 +69,36 @@ export default function AppearanceSettings() {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-(--text-secondary)">
-          {t('settings.fontSize')} ({activeLabel})
-        </label>
-        <input
-          type="range"
-          min={0}
-          max={FONT_SCALE_OPTIONS.length - 1}
-          step={1}
-          value={activeIndex}
-          onChange={(e) => updateSettings({ fontSize: FONT_SCALE_OPTIONS[parseInt(e.target.value)] })}
-          className="w-full accent-(--accent)"
-        />
-        <div className="flex justify-between text-xs text-(--text-muted)">
-          {PRESET_LABEL_KEYS.map((key) => (
-            <span key={key}>{t(`settings.fontSizePresets.${key}`)}</span>
-          ))}
-        </div>
+        <label className="block text-sm font-medium text-(--text-secondary)">{t('settings.fontSize')}</label>
+        <select
+          value={selectValue}
+          onChange={(e) => handleFontSelect(e.target.value)}
+          className="w-full px-3 py-2 border border-(--input-border) rounded-md bg-(--input-bg) text-(--text-primary) focus:outline-none focus:ring-1 focus:ring-(--accent)"
+        >
+          {FONT_SCALE_OPTIONS.map((scale, i) => {
+            const px = Math.round(scale * 16);
+            return (
+              <option key={i} value={String(i)}>
+                {t(`settings.fontSizePresets.${PRESET_LABEL_KEYS[i]}`)} ({px}px)
+              </option>
+            );
+          })}
+          <option value="custom">{t('settings.fontSizePresets.custom')}</option>
+        </select>
+        {showCustom && (
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min={MIN_CUSTOM_PX}
+              max={MAX_CUSTOM_PX}
+              step={1}
+              value={currentPx}
+              onChange={(e) => handleCustomPx(e.target.value)}
+              className="w-24 px-3 py-2 border border-(--input-border) rounded-md bg-(--input-bg) text-(--text-primary) focus:outline-none focus:ring-1 focus:ring-(--accent)"
+            />
+            <span className="text-sm text-(--text-muted)">px</span>
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">

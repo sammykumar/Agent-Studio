@@ -54,6 +54,7 @@ export const ja: I18nMessages = {
       medium: '標準',
       large: '大',
       xlarge: '特大',
+      custom: 'カスタム',
     },
     inactivePanelDimming: '非アクティブパネルの暗さ',
     showProviderIcons: 'プロバイダーアイコンを表示',
