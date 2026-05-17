@@ -51,7 +51,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "dev": "concurrently -k -n SERVER,NGROK -c cyan,magenta \"npm run dev:local\" \"npm run tunnel\"",
+    "dev": "concurrently -k -n D3K,NGROK -c cyan,magenta \"d3k --port 3100 --script dev:local --startup-timeout 90 --headless --no-agent --no-tui\" \"npm run tunnel\"",
     "dev:local": "cross-env NODE_ENV=development tsx server.ts",
     "dev:d3k": "d3k --port 3100 --startup-timeout 90 --headless --with-agent claude",
     "tunnel": "wait-on http://localhost:3100 && node scripts/tunnel.mjs",
