@@ -132,7 +132,7 @@ export async function pullProjectClickUpTasks(
       }
 
       const settings = await (deps.loadSettings ?? defaultLoadSettings)(opts.userId, { silent: true });
-      const token = settings.integrations?.clickup?.personalToken?.trim();
+      const token = settings.integrations?.clickup?.accessToken?.trim();
       if (!token) {
         const msg = 'ClickUp token is not configured for this user';
         emit({ type: 'sync_failed', userId: opts.userId, projectId: opts.projectId, error: msg });
@@ -273,7 +273,7 @@ export async function pushTaskStatusToClickUp(
     if (!integration?.clickupSyncEnabled || !integration.clickupStatusMap) return;
 
     const settings = await (deps.loadSettings ?? defaultLoadSettings)(opts.userId, { silent: true });
-    const token = settings.integrations?.clickup?.personalToken?.trim();
+    const token = settings.integrations?.clickup?.accessToken?.trim();
     if (!token) return;
 
     const status = agentStudioStatusToClickUp(link.workflowStatus, integration.clickupStatusMap);

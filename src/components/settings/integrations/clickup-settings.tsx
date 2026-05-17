@@ -64,9 +64,12 @@ export default function ClickUpSettings() {
   // Connection state
   const [connected, setConnected] = useState<boolean | null>(null);
   const [username, setUsername] = useState<string | undefined>();
-  const [tokenInput, setTokenInput] = useState('');
   const [busy, setBusy] = useState(false);
-  const [connectError, setConnectError] = useState<string | null>(null);
+  const [oauthBanner, setOauthBanner] = useState<
+    | { kind: 'success'; message: string }
+    | { kind: 'error'; message: string }
+    | null
+  >(null);
 
   // Pickers
   const [teams, setTeams] = useState<Array<{ id: string; name: string }>>([]);
@@ -199,6 +202,26 @@ export default function ClickUpSettings() {
     })();
   }, [refreshStatus, loadTeams, loadProjectIntegration, projectId]);
 
+  // Pick up the result of the OAuth round-trip. The callback route 302s back
+  // here with ?clickup=connected or ?clickup=error&reason=... — show a banner
+  // and scrub the params from the URL so a refresh doesn't re-trigger them.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const clickup = params.get('clickup');
+    if (!clickup) return;
+    if (clickup === 'connected') {
+      setOauthBanner({ kind: 'success', message: 'Connected to ClickUp.' });
+    } else {
+      const reason = params.get('reason') ?? 'unknown';
+      setOauthBanner({ kind: 'error', message: `ClickUp connection failed (${reason}).` });
+    }
+    params.delete('clickup');
+    params.delete('reason');
+    const next = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}${window.location.hash}`;
+    window.history.replaceState({}, '', next);
+  }, []);
+
   useEffect(() => {
     if (connected && teamId) {
       void loadSpaces(teamId);
@@ -217,31 +240,13 @@ export default function ClickUpSettings() {
     }
   }, [connected, listId, loadStatuses]);
 
-  const handleConnect = useCallback(async () => {
-    setBusy(true);
-    setConnectError(null);
-    try {
-      const res = await fetchWithClientId('/api/integrations/clickup/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: tokenInput.trim() }),
-      });
-      const data = (await res.json()) as { error?: string; username?: string };
-      if (!res.ok) {
-        setConnectError(data.error ?? 'Failed to connect');
-        return;
-      }
-      setConnected(true);
-      setUsername(data.username);
-      setTokenInput('');
-      await loadTeams();
-    } catch (err) {
-      console.error(err);
-      setConnectError('Failed to connect');
-    } finally {
-      setBusy(false);
-    }
-  }, [tokenInput, loadTeams]);
+  const handleConnect = useCallback(() => {
+    // Full-page navigation: ClickUp will redirect back to our callback, which
+    // in turn 302s the browser back to `returnTo` with a clickup= status param.
+    const returnTo = window.location.pathname + window.location.search + window.location.hash;
+    const url = `/api/integrations/clickup/oauth/start?returnTo=${encodeURIComponent(returnTo)}`;
+    window.location.assign(url);
+  }, []);
 
   const handleDisconnect = useCallback(async () => {
     setBusy(true);
@@ -338,6 +343,19 @@ export default function ClickUpSettings() {
         </p>
       </header>
 
+      {oauthBanner && (
+        <div
+          className={`rounded-lg border px-3 py-2 text-xs ${
+            oauthBanner.kind === 'success'
+              ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200'
+              : 'border-red-500/40 bg-red-500/10 text-red-200'
+          }`}
+          role="status"
+        >
+          {oauthBanner.message}
+        </div>
+      )}
+
       <section className="space-y-3 rounded-xl border border-(--divider) p-4">
         <h4 className="text-sm font-medium text-(--text-primary)">Connection</h4>
         {connected === null ? (
@@ -358,30 +376,16 @@ export default function ClickUpSettings() {
           </div>
         ) : (
           <div className="space-y-2">
-            <label className="block text-xs text-(--text-secondary)">
-              Personal API token
-              <input
-                type="password"
-                value={tokenInput}
-                onChange={(e) => setTokenInput(e.target.value)}
-                placeholder="pk_..."
-                autoComplete="off"
-                className="mt-1 w-full rounded-lg border border-(--divider) bg-(--input-bg) px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-(--accent)"
-              />
-            </label>
-            {connectError ? (
-              <p className="text-xs text-red-500">{connectError}</p>
-            ) : null}
             <button
               type="button"
               onClick={handleConnect}
-              disabled={busy || !tokenInput.trim()}
+              disabled={busy}
               className="rounded-lg bg-(--accent) px-3 py-1.5 text-xs font-medium text-(--accent-foreground) disabled:opacity-60"
             >
-              Connect
+              Connect ClickUp
             </button>
             <p className="text-[11px] text-(--text-tertiary)">
-              Generate a token in ClickUp → Settings → Apps → "API Token".
+              You will be redirected to ClickUp to authorize the workspaces this app may access.
             </p>
           </div>
         )}

@@ -14,7 +14,7 @@ export async function getAuthedClickUpClient(
   if ('response' in auth) return { response: auth.response };
 
   const settings = await SettingsManager.load(auth.userId, { silent: true });
-  const token = settings.integrations?.clickup?.personalToken?.trim();
+  const token = settings.integrations?.clickup?.accessToken?.trim();
   if (!token) {
     return {
       response: NextResponse.json(

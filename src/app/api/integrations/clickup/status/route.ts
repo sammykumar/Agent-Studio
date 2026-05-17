@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     const settings = await SettingsManager.load(auth.userId, { silent: true });
     const clickup = settings.integrations?.clickup;
     return NextResponse.json({
-      connected: Boolean(clickup?.personalToken),
+      connected: Boolean(clickup?.accessToken),
       username: clickup?.username,
       workspaceId: clickup?.workspaceId,
     });

@@ -41,8 +41,8 @@ export interface TelemetrySettings {
 }
 
 export interface ClickUpUserSettings {
-  /** Empty string means not configured. */
-  personalToken: string;
+  /** OAuth 2.0 access token. Empty string means not connected. */
+  accessToken: string;
   /** Cached from /user for display in settings UI. */
   username?: string;
   /** Optional default workspace, pre-selected in project settings. */

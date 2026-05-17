@@ -85,7 +85,7 @@ export async function PUT(
   if (statusMap === undefined && body.listId) {
     try {
       const settings = await SettingsManager.load(auth.userId, { silent: true });
-      const token = settings.integrations?.clickup?.personalToken?.trim();
+      const token = settings.integrations?.clickup?.accessToken?.trim();
       if (token) {
         const client = new ClickUpClient({ token });
         const { statuses } = await client.getListStatuses(body.listId);

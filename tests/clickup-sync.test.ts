@@ -90,7 +90,7 @@ test('pull inserts new external tasks and archives missing ones, preserving loca
       }),
       loadSettings: async () =>
         ({
-          integrations: { clickup: { personalToken: 'fake-token' } },
+          integrations: { clickup: { accessToken: 'fake-token' } },
         }) as any,
       createClient: () => fakeClient(remote),
       notifyMutation: () => {

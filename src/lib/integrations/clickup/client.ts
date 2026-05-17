@@ -1,9 +1,9 @@
 /**
  * Minimal fetch wrapper around the ClickUp v2 REST API.
  *
- * Auth uses a Personal API Token sent in the `Authorization` header — no OAuth
- * for v1. Errors are surfaced as typed classes so the sync layer can decide
- * whether to disable the integration (auth) vs. retry (transient).
+ * Auth uses an OAuth 2.0 access token sent as `Authorization: Bearer ...`.
+ * Errors are surfaced as typed classes so the sync layer can decide whether to
+ * disable the integration (auth) vs. retry (transient).
  *
  * https://clickup.com/api/
  */
@@ -94,7 +94,7 @@ export class ClickUpClient {
     const init: RequestInit = {
       method,
       headers: {
-        Authorization: this.token,
+        Authorization: `Bearer ${this.token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },

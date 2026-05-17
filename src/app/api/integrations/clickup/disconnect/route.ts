@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       integrations: {
         ...previous.integrations,
         clickup: {
-          personalToken: '',
+          accessToken: '',
         },
       },
       lastModified: new Date().toISOString(),
